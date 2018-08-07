@@ -1,0 +1,20 @@
+{% extends [
+    easyadmin_config('design.templates.layout'),
+    '@EasyAdmin/default/layout.html.twig'
+] %}
+
+{% block page_title -%}
+    {% trans from 'OperaMedia' %}Media{% endtrans %}
+{%- endblock %}
+
+{% block content_title %}
+    {% trans with { '%source%': source.name } from 'OperaMedia' %}List of media for source %source%{% endtrans %}
+{% endblock %}
+
+{% block main %}
+    {% for source in sources %}
+        <div class="source">
+            <strong>{{ source.name }}</strong>
+        </div>
+    {% endfor %}
+{% endblock %}
