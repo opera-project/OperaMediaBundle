@@ -19,12 +19,14 @@ class FolderRepository extends ServiceEntityRepository
         parent::__construct($registry, Folder::class);
     }
 
-    public function findBySourceRootFolder($sourceName)
+    public function findBySourceRootFolder($sourceName): array
     {
         return $this->createQueryBuilder('f')
                     ->andWhere('f.parent is NULL')
                     ->andWhere('f.source = :sourceName')
-                    ->setParameter('sourceName', $sourceName);
+                    ->setParameter('sourceName', $sourceName)
+                    ->getQuery()
+                    ->getResult();
     }
 
     public function findOneBySourceAndId(string $source, string $id) : ?Folder

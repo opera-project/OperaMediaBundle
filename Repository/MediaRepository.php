@@ -19,11 +19,13 @@ class MediaRepository extends ServiceEntityRepository
         parent::__construct($registry, Media::class);
     }
 
-    public function findBySourceRootFolder($sourceName)
+    public function findBySourceRootFolder($sourceName): array
     {
         return $this->createQueryBuilder('m')
                     ->andWhere('m.folder is NULL')
                     ->andWhere('m.source = :sourceName')
-                    ->setParameter('sourceName', $sourceName);
+                    ->setParameter('sourceName', $sourceName)
+                    ->getQuery()
+                    ->getResult();
     }
 }

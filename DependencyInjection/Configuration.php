@@ -11,9 +11,6 @@ class Configuration implements ConfigurationInterface
      * Generates the configuration tree builder.
      *
      * opera_media:
-    sources:
-        images:
-            filesystem: gaufrette.images_filesystem
      * @return TreeBuilder The tree builder
      */
     public function getConfigTreeBuilder()

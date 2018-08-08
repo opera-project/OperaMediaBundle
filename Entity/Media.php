@@ -46,6 +46,7 @@ class Media
 
     /**
      * @ORM\ManyToOne(targetEntity="Opera\MediaBundle\Entity\Folder", inversedBy="medias")
+     * @ORM\JoinColumn(name="folder_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $folder;
 
@@ -127,7 +128,15 @@ class Media
     public function setSource(string $source): self
     {
         $this->source = $source;
+        if ($this->getFolder() && $this->getFolder()->getSource() !== $this->source) {
+            $this->getFolder()->removeMedia($this);
+        }
 
         return $this;
+    }
+
+    public function getType(): string
+    {
+        return 'media';
     }
 }

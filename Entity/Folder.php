@@ -132,7 +132,10 @@ class Folder
     public function setSource(string $source): self
     {
         $this->source = $source;
-
+        if ($this->getParent() && $this->getParent()->getSource() !== $this->source) {
+            $this->getParent()->removeChild($this);
+        }
+    
         return $this;
     }
 
@@ -174,8 +177,20 @@ class Folder
 
     public function setParent(?self $parent): self
     {
-        $this->parent = $parent;
+        if ($parent == null || ($this->getSource() === $parent->getSource())) {
+            $this->parent = $parent;
+        }
 
         return $this;
+    }
+
+    public function getType(): string
+    {
+        return 'folder';
+    }
+
+    public function __toString(): string
+    {
+        return 'Folder '.$this->getSource().'.'.$this->getName();
     }
 }

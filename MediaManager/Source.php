@@ -5,6 +5,7 @@ namespace Opera\MediaBundle\MediaManager;
 use Gaufrette\Filesystem;
 use Opera\MediaBundle\Repository\FolderRepository;
 use Opera\MediaBundle\Repository\MediaRepository;
+use Opera\MediaBundle\Entity\Folder;
 
 class Source
 {
@@ -35,17 +36,17 @@ class Source
     public function list(?Folder $folder = null) : array
     {
         if ($folder && $folder->getSource() != $this->getName()) {
-            throw new \LogicException("Folder source ".$folder->getSource()." different than");
+            throw new \LogicException("Folder source ".$folder->getSource()." not from source ".$this->getName());
         }
 
         if ($folder === null) {
-            $subfolders = $folderRepository->findBySourceRootFolder($this->name);
-            $mediaInFolder = $folderRepository->findBySourceRootFolder($this->name);
+            $subfolders = $this->folderRepository->findBySourceRootFolder($this->name);
+            $mediaInFolder = $this->mediarepository->findBySourceRootFolder($this->name);
         } else {
-            $subfolders = $folder->getFolders();
-            $mediaInFolder = $folder->getMedias();
+            $subfolders = $folder->getChilds()->getValues();
+            $mediaInFolder = $folder->getMedias()->getValues();
         }
 
-        return array_concat($subfolders, $mediaInFolder);
+        return array_merge($subfolders ?? [], $mediaInFolder ?? []);
     }
 }

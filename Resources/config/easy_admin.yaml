@@ -1,0 +1,52 @@
+easy_admin:
+    entities:
+        Folder:
+            class: Opera\MediaBundle\Entity\Folder
+            disabled_actions: ['list']
+            form:
+                fields:
+                    - name
+                    - slug
+                    - source
+                    - parent
+            edit:
+                fields:
+                    - name
+                    - parent
+                actions:
+                    - delete
+                    - { name: 'opera_admin_media_list', type: 'route', label: 'Back to list' }
+            new:
+                actions:
+                    - { name: 'opera_admin_media_list', type: 'route', label: 'Back to list' }
+        
+        Media:
+            class: Opera\MediaBundle\Entity\Media
+            disabled_actions: ['list']
+            form:
+                fields:
+                    - name
+                    - slug
+                    - source
+                    - folder
+                    - path
+            edit:
+                fields:
+                    - name
+                    - folder
+                actions:
+                    - delete
+                    - { name: 'opera_admin_media_list', type: 'route', label: 'Back to list' }
+            new:
+                actions:
+                    - { name: 'opera_admin_media_list', type: 'route', label: 'Back to list' }
+
+            # templates:
+            #     edit: '@OperaMedia/easy_admin/edit.html.twig'
+                # edit: 'OperaMediaBundle:easy_admin:edit.html.twig'
+                # edit: 'templates/bundles/OperaMediaBundle/easy_admin/Media/edit.html.twig'
+                #     edit: 'OperaMediaBundle:admin:toto.html.twig'
+            #     # edit: '@OperaMediaBundle/admin/toto.html.twig'
+
+# query builder des form a voir:
+# https://github.com/EasyCorp/EasyAdminBundle/issues/1145
