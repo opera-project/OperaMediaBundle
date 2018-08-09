@@ -9,8 +9,8 @@
 
 {% block content_title %}
     {% trans with { '%source%': selected_source.name } from 'OperaMedia' %}List of media for source %source%{% endtrans %}
-    <a class="btn btn-primary action-new" href="{{ path('easyadmin', { action: 'new', entity: 'Folder' }) }}" >New Folder</a>
-    <a class="btn btn-primary action-new" href="{{ path('easyadmin', { action: 'new', entity: 'Media' }) }}" >New Media</a>
+    <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form') }}">New Folder</a>
+    <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form') }}">New Media</a>
 
 
 {% endblock %}
@@ -58,11 +58,16 @@
                     {% endif %}
                     </div>
                     <div class="panel-body">
+                        <div class="file-preview">
+                            {% if item.type == 'media' %}
+                                <img src="{{images[item.path]}}" />
+                            {% endif %}
+                        </div>
                         <div class="btn-group" role="group" aria-label="...">
                             <a class="btn btn-default" href="{% if item.type == 'folder' %}
-                                        {{ path('easyadmin', { action: 'edit', entity: 'Folder', id: item.id.toString }) }}
+                                        {{ path('opera_admin_media_folder_form', { id: item.id.toString }) }}
                                         {% else %}
-                                        {{ path('easyadmin', { action: 'edit', entity: 'Media', id: item.id.toString }) }}
+                                        {{ path('opera_admin_media_media_form', { id: item.id.toString }) }}
                                         {% endif %}
                             ">
                                 Edit
@@ -88,6 +93,14 @@
     .panel {
         display: inline-block;
         margin: 10px;
+    }
+    .file-preview img {
+        max-height: 80px;
+    }
+
+    .file-preview {
+        min-height: 100px;
+        text-align: center;
     }
 </style>
 {% endblock %}

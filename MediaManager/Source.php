@@ -5,7 +5,9 @@ namespace Opera\MediaBundle\MediaManager;
 use Gaufrette\Filesystem;
 use Opera\MediaBundle\Repository\FolderRepository;
 use Opera\MediaBundle\Repository\MediaRepository;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Opera\MediaBundle\Entity\Folder;
+use Opera\MediaBundle\Entity\Media;
 
 class Source
 {
@@ -49,4 +51,44 @@ class Source
 
         return array_merge($subfolders ?? [], $mediaInFolder ?? []);
     }
+
+    public function upload(UploadedFile $file) : string
+    {
+        $content = file_get_contents($file->getPathname());
+        $md5sum = md5($content);
+
+        // Generate a unique path based on the date and add file extension of the uploaded file
+        $path = sprintf('%s/%s/%s/%s.%s', substr($md5sum, 0, 2), substr($md5sum, 2, 2), substr($md5sum, 4, 2), $md5sum, $file->getClientOriginalExtension());
+        $this->filesystem->write($path, $content, true);
+
+        return $path;
+    }
+
+    public function has(Media $media) : bool
+    {
+        return $this->filesystem->has($media->getPath());
+    }
+
+    public function read(Media $media)
+    {
+        $fileContent = $this->filesystem->read($media->getPath());
+
+        return $fileContent;
+    }
+
+    public function delete(string $path)
+    {
+        $delete = $this->filesystem->delete($path);
+
+        return $delete;
+    }
+
+    /**
+     * @Todo good ?
+     */
+    public function getBase64(Media $media)
+    {
+        return 'data:' . $media->getMime() . ';base64,' . base64_encode($this->filesystem->read($media->getPath()));
+    }
+
 }

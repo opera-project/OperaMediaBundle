@@ -1,0 +1,25 @@
+{% form_theme form with easyadmin_config('design.form_theme') %}
+{% extends [
+    easyadmin_config('design.templates.layout'),
+    '@EasyAdmin/default/layout.html.twig'
+] %}
+
+{% block page_title -%}
+    {% trans from 'OperaMedia' %}Media Form{% endtrans %}
+{%- endblock %}
+
+{% block content_title %}
+    {% trans from 'OperaMedia' %}Create/Edit Media{% endtrans %}
+{% endblock %}
+
+{% block main %}
+
+ {# missing class="form-horizontal new-form #}
+            {{ form_start(form) }}
+                {{ form_rest(form) }}
+                <button type="submit" class="btn btn-primary action-save">
+                    <i class="fa fa-save"></i> {{ 'action.save'|trans }}
+                </button>
+            {{ form_end(form) }}
+
+{% endblock %}
