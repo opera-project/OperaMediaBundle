@@ -8,16 +8,21 @@ use Opera\MediaBundle\Form\FolderType;
 use Opera\MediaBundle\Form\MediaType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
+use Opera\MediaBundle\Repository\FolderRepository;
 
 class MediaManager
 {
     private $formFactory;
+    private $folderRepository;
 
     private $sources = [];
 
-    public function __construct(FormFactoryInterface $formFactory)
+    public function __construct(FormFactoryInterface $formFactory,
+                                FolderRepository $folderRepository)
     {
         $this->formFactory = $formFactory;
+        $this->folderRepository = $folderRepository;
     }
 
     public function registerSource(Source $source)
@@ -37,22 +42,23 @@ class MediaManager
 
     public function hasSource(string $sourceSlug)
     {
-        isset($this->sources[$sourceSlug]);
+        return isset($this->sources[$sourceSlug]);
     }
 
-    public function prepareMediaForm(?Media $media): Form
+    public function prepareMediaForm(?Media $media, string $sourceName, ?string $parentFolderId = null): Form
     {
         if (!$media) {
             $media = new Media();
-            $form = $this->formFactory->create(MediaType::class, $media, ['mode' => 'new']);
-        } else {
-            $form = $this->formFactory->create(MediaType::class, $media, [
-                'mode' => 'edit',
-                'source' => $media->getSource(),
-            ]);
-        }
+            $media->setSource($sourceName);
+            $media->setFolder($parentFolderId ? $this->folderRepository->findOneBySourceAndId($sourceName, $parentFolderId) : null);
 
-        return $form;
+            return $this->formFactory->create(MediaType::class, $media);
+        } 
+
+        return $this->formFactory->create(MediaType::class, $media, [
+            'mode' => 'edit',
+            'source' => $media->getSource(),
+        ]);
     }
 
     public function uploadAndPrepareMediaForSave(UploadedFile $file, Media $media)
@@ -65,20 +71,21 @@ class MediaManager
         $media->setPath($path);
     }
 
-    public function prepareFolderForm(?Folder $folder): Form
+    public function prepareFolderForm(?Folder $folder, string $sourceName, ?string $parentFolderId = null): Form
     {
         if (!$folder) {
             $folder = new Folder();
-            $form = $this->formFactory->create(FolderType::class, $folder, ['mode' => 'new']);
-        } else {
-            $form = $this->formFactory->create(FolderType::class, $folder, [
-                'mode' => 'edit',
-                'source' => $folder->getSource(),
-                'folder_id' => $folder->getId()->toString(),
-            ]);
-        }
+            $folder->setSource($sourceName);
+            $folder->setParent($parentFolderId ? $this->folderRepository->findOneBySourceAndId($sourceName, $parentFolderId) : null);
 
-        return $form;
+            return $this->formFactory->create(FolderType::class, $folder);
+        }
+        
+        return $this->formFactory->create(FolderType::class, $folder, [
+            'mode' => 'edit',
+            'source' => $folder->getSource(),
+            'folder' => $folder,
+        ]);
     }
 
 }

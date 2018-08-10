@@ -6,12 +6,25 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Doctrine\ORM\EntityRepository;
+use Opera\MediaBundle\MediaManager\MediaManager;
 
 use Opera\MediaBundle\Entity\Folder;
 
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormError;
+
 class FolderType extends AbstractType
 {
+
+    private $mediaManager;
+
+    public function __construct(MediaManager $mediaManager)
+    {
+        $this->mediaManager = $mediaManager;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -19,25 +32,30 @@ class FolderType extends AbstractType
                 ->add('slug');
 
         if ($options['mode'] === 'new') {
-            $builder->add('source');
+            $builder->add('source', SourceType::class, array('disabled' => true));
         }
 
         if ($options['mode'] === 'edit') {
             $builder->add('parent', EntityType::class, array(
                 'class' => Folder::class,
                 'required'   => false,
+                'placeholder' => 'Root',
                 'query_builder' => function (EntityRepository $er) use ($options) {
-                    $res = $er->createQueryBuilder('f')
-                            ->andWhere('f.source = :source')
-                            ->andWhere('f.id != :folder_id')
-                            ->leftJoin('f.parent', 'p')
-                            ->andWhere('p.id != :folder_id OR p.id is NULL')
-                            ->setParameter('source', $options['source'])
-                            ->setParameter('folder_id', $options['folder_id']);
-                    return $res;
+                    return $er->getAvailableParentFolder($options['source'], $options['folder']);
                 }
             ));
         }
+
+        // @todo validators
+        $builder->addEventListener(FormEvents::PRE_SUBMIT,  function(FormEvent $event) use ($options) {
+            $datas = $event->getData();
+            $form = $event->getForm();
+
+            if ($options['mode'] === 'new' && isset($datas['source'])
+                && !$this->mediaManager->hasSource($datas['source'])) {
+                    $form->addError(new FormError('Source '.$datas['source']." don't exist"));
+            }
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -46,7 +64,7 @@ class FolderType extends AbstractType
             'data_class' => Folder::class,
             'mode' => 'new', // 'new' or 'edit'
             'source' => null,
-            'folder_id' => null,
+            'folder' => null,
         ]);
     }
 

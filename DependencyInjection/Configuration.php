@@ -27,6 +27,7 @@ class Configuration implements ConfigurationInterface
                     ->arrayPrototype()
                         ->children()
                             ->scalarNode('filesystem')->isRequired()->end()
+                            ->scalarNode('wrapper')->isRequired()->end()
                         ->end()
                     ->end()
                 ->end()

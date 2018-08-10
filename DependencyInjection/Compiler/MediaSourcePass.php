@@ -18,5 +18,8 @@ class MediaSourcePass implements CompilerPassInterface
         foreach ($container->findTaggedServiceIds('opera.media_source') as $id => $tags) {
             $manager->addMethodCall('registerSource', [ new Reference($id) ]);   
         }
+
+        $container->getDefinition('liip_imagine.gd')->setPublic(true);
+
     }
 }

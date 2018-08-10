@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Opera\MediaBundle\Entity\Folder;
 use Opera\MediaBundle\Entity\Media;
 use Symfony\Component\HttpFoundation\Request;
+use Opera\MediaBundle\MediaManager\Source;
 
 class AdminController extends Controller
 {
@@ -20,7 +21,7 @@ class AdminController extends Controller
      */
     public function formFolder(MediaManager $mediaManager, Folder $folder = null, Request $request)
     {
-        $form = $mediaManager->prepareFolderForm($folder);
+        $form = $mediaManager->prepareFolderForm($folder, $request->get('source'), $request->get('parentFolder'));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -30,7 +31,10 @@ class AdminController extends Controller
             $entityManager->persist($folder);
             $entityManager->flush();
     
-            return $this->redirectToRoute('opera_admin_media_list', []);
+            return $this->redirectToRoute('opera_admin_media_list', [
+                'source_name' => $folder->getSource(),
+                'folder_id' => $folder->getParent()->getId(),
+            ]);
         }
 
         return [
@@ -45,7 +49,7 @@ class AdminController extends Controller
      */
     public function formMedia(MediaManager $mediaManager, Request $request, ?Media $media = null)
     {
-        $form = $mediaManager->prepareMediaForm($media);
+        $form = $mediaManager->prepareMediaForm($media, $request->get('source'), $request->get('parentFolder'));
 
         $form->handleRequest($request);
 
@@ -60,7 +64,10 @@ class AdminController extends Controller
             $entityManager->persist($media);
             $entityManager->flush();
     
-            return $this->redirectToRoute('opera_admin_media_list', []);
+            return $this->redirectToRoute('opera_admin_media_list', [
+                'source_name' => $media->getSource(),
+                'folder_id' => $media->getFolder()->getId(),
+            ]);
         }
 
         return [
@@ -80,21 +87,11 @@ class AdminController extends Controller
         $selectedSource = $source_name ? $mediaManager->getSource($source_name) : array_values($sources)[0];
         $items = $selectedSource->list($folder);
 
-        // @Todo remove this and how to get in twig the image directly with the selectedSource ?
-        $images = [];
-        foreach ($items as $item) {
-            if ($item instanceof Media) {
-                $images[$item->getPath()] = $selectedSource->getBase64($item);
-            }
-        }
-        // @Todo end
-
         return [
             'sources' => $sources,
             'selected_folder' => $folder,
             'selected_source' => $selectedSource,
             'items' => $items,
-            'images' => $images,
         ];
     }
 
@@ -124,7 +121,7 @@ class AdminController extends Controller
     {
         $sourceName = $media->getSource();
         $parentFolderId = $media->getFolder() ? $media->getFolder()->getId() : null;
-        $source = $this->mediaManager->getSource($media->getSource());
+        $source = $mediaManager->getSource($media->getSource());
         $source->delete($media->getPath());
 
         $em = $this->getDoctrine()->getManager();

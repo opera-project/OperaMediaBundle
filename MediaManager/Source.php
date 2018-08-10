@@ -83,12 +83,4 @@ class Source
         return $delete;
     }
 
-    /**
-     * @Todo good ?
-     */
-    public function getBase64(Media $media)
-    {
-        return 'data:' . $media->getMime() . ';base64,' . base64_encode($this->filesystem->read($media->getPath()));
-    }
-
 }

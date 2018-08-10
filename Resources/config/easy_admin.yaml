@@ -1,9 +1,0 @@
-easy_admin:
-    entities:
-        Folder:
-            class: Opera\MediaBundle\Entity\Folder
-            disabled_actions: ['new', 'edit']
-
-        Media:
-            class: Opera\MediaBundle\Entity\Media
-            disabled_actions: ['new', 'edit']

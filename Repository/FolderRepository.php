@@ -36,4 +36,23 @@ class FolderRepository extends ServiceEntityRepository
             'id' => $id,
         ]);
     }
+
+    public function getSourceFolders($sourceName)
+    {
+        return $this->createQueryBuilder('f')
+                  ->andWhere('f.source = :source')
+                  ->setParameter('source', $sourceName);
+    }
+
+    public function getAvailableParentFolder($sourceName, Folder $folder)
+    {
+        return $this->createQueryBuilder('f')
+                    ->andWhere('f.source = :source')
+                    ->andWhere('f.id != :folder_id')
+                    ->leftJoin('f.parent', 'p')
+                    ->andWhere('p.id != :folder_id OR p.id is NULL')
+                    ->setParameter('source', $sourceName)
+                    ->setParameter('folder_id', (string) $folder->getId());
+    }
+
 }

@@ -9,10 +9,6 @@
 
 {% block content_title %}
     {% trans with { '%source%': selected_source.name } from 'OperaMedia' %}List of media for source %source%{% endtrans %}
-    <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form') }}">New Folder</a>
-    <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form') }}">New Media</a>
-
-
 {% endblock %}
 
 {% block main %}
@@ -43,6 +39,13 @@
                         {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
                     </a>
                 {% endif %}
+
+                <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                    {% trans from 'OperaMedia' %}New Folder{% endtrans %}
+                </a>
+                <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                    {% trans from 'OperaMedia' %}New Media{% endtrans %}
+                </a>
             </div>
 
             {% for item in items %}
@@ -60,14 +63,14 @@
                     <div class="panel-body">
                         <div class="file-preview">
                             {% if item.type == 'media' %}
-                                <img src="{{images[item.path]}}" />
+                                <img src="{{ asset(item.path) | imagine_filter('opera_thumbnail') }}" />
                             {% endif %}
                         </div>
                         <div class="btn-group" role="group" aria-label="...">
                             <a class="btn btn-default" href="{% if item.type == 'folder' %}
-                                        {{ path('opera_admin_media_folder_form', { id: item.id.toString }) }}
+                                        {{ path('opera_admin_media_folder_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
                                         {% else %}
-                                        {{ path('opera_admin_media_media_form', { id: item.id.toString }) }}
+                                        {{ path('opera_admin_media_media_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
                                         {% endif %}
                             ">
                                 Edit

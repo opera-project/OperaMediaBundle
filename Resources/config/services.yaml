@@ -12,7 +12,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     Opera\MediaBundle\:
         resource: '../../*'
-        exclude: '../../{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+        exclude: '../../{DependencyInjection,Entity,Migrations,Tests,Kernel.php,MediaManager/Source.php}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class

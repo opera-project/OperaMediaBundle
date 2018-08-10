@@ -7,6 +7,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Doctrine\ORM\EntityRepository;
 use Opera\MediaBundle\MediaManager\MediaManager;
 
@@ -33,32 +34,29 @@ class MediaType extends AbstractType
                 ->add('slug');
 
         if ($options['mode'] === 'new') {
-            $builder->add('source');
-            $builder->add('path', FileType::class, array(
-                // 'mapped' => false,
-                'data_class' => null, // required ?
-            ));
+            $builder->add('source', SourceType::class)
+                    ->add('path', FileType::class);
         }
 
         if ($options['mode'] === 'edit') {
             $builder->add('folder', EntityType::class, array(
                 'class' => Folder::class,
                 'required'   => false,
+                'placeholder' => 'Root',
                 'query_builder' => function (EntityRepository $er) use ($options) {
-                  return $er->createQueryBuilder('f')
-                            ->andWhere('f.source = :source')
-                            ->setParameter('source', $options['source']);
+                    return $er->getSourceFolders($options['source']);
                 }
             ));
         }
 
+        // @todo validators
         $builder->addEventListener(FormEvents::PRE_SUBMIT,  function(FormEvent $event) use ($options) {
             $datas = $event->getData();
             $form = $event->getForm();
 
             if ($options['mode'] === 'new' && isset($datas['source'])
                 && !$this->mediaManager->hasSource($datas['source'])) {
-                    $form->addError(new FormError('Source'.$datas['source']." don't exist"));
+                    $form->addError(new FormError('Source '.$datas['source']." don't exist"));
             }
         });
     }
