@@ -8,9 +8,12 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Opera\MediaBundle\Validator\Constraints as MediaAssert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="Opera\MediaBundle\Repository\FolderRepository")
+ * @UniqueEntity("slug")
  */
 class Folder
 {
@@ -28,12 +31,14 @@ class Folder
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Gedmo\Slug(fields={"name"})
+     * @Assert\NotBlank()
      */
     private $slug;
 
@@ -45,6 +50,7 @@ class Folder
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     * @MediaAssert\IsMediaSource()
      */
     private $source;
 

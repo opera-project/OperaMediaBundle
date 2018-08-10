@@ -21,20 +21,13 @@ use Symfony\Component\Form\FormError;
 
 class MediaType extends AbstractType
 {
-    private $mediaManager;
-
-    public function __construct(MediaManager $mediaManager)
-    {
-        $this->mediaManager = $mediaManager;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('name')
                 ->add('slug');
 
         if ($options['mode'] === 'new') {
-            $builder->add('source', SourceType::class)
+            $builder->add('source', SourceType::class, array('disabled' => true))
                     ->add('path', FileType::class);
         }
 
@@ -48,17 +41,6 @@ class MediaType extends AbstractType
                 }
             ));
         }
-
-        // @todo validators
-        $builder->addEventListener(FormEvents::PRE_SUBMIT,  function(FormEvent $event) use ($options) {
-            $datas = $event->getData();
-            $form = $event->getForm();
-
-            if ($options['mode'] === 'new' && isset($datas['source'])
-                && !$this->mediaManager->hasSource($datas['source'])) {
-                    $form->addError(new FormError('Source '.$datas['source']." don't exist"));
-            }
-        });
     }
 
     public function configureOptions(OptionsResolver $resolver)

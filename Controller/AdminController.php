@@ -33,7 +33,7 @@ class AdminController extends Controller
     
             return $this->redirectToRoute('opera_admin_media_list', [
                 'source_name' => $folder->getSource(),
-                'folder_id' => $folder->getParent()->getId(),
+                'folder_id' => $folder->getParent() ? $folder->getParent()->getId() : null,
             ]);
         }
 
@@ -56,8 +56,7 @@ class AdminController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             if ($request->files && $request->files->get('media') && isset($request->files->get('media')['path'])) {
                 $media = $form->getData();
-                $file = $request->files->get('media')['path'];
-                $mediaManager->uploadAndPrepareMediaForSave($file, $media);
+                $mediaManager->getSource($media->getSource())->upload($media);
             }
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -121,8 +120,9 @@ class AdminController extends Controller
     {
         $sourceName = $media->getSource();
         $parentFolderId = $media->getFolder() ? $media->getFolder()->getId() : null;
+        
         $source = $mediaManager->getSource($media->getSource());
-        $source->delete($media->getPath());
+        $source->delete($media);
 
         $em = $this->getDoctrine()->getManager();
         $em->remove($media);

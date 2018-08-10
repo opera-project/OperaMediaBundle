@@ -52,8 +52,13 @@ class Source
         return array_merge($subfolders ?? [], $mediaInFolder ?? []);
     }
 
-    public function upload(UploadedFile $file) : string
+    public function upload(Media $media) : Media
     {
+        if (!$media->getPath() instanceof UploadedFile) {
+            throw new \InvalidArgumentException('path have to be one of '.UploadedFile::class);
+        }
+
+        $file = $media->getPath();
         $content = file_get_contents($file->getPathname());
         $md5sum = md5($content);
 
@@ -61,7 +66,11 @@ class Source
         $path = sprintf('%s/%s/%s/%s.%s', substr($md5sum, 0, 2), substr($md5sum, 2, 2), substr($md5sum, 4, 2), $md5sum, $file->getClientOriginalExtension());
         $this->filesystem->write($path, $content, true);
 
-        return $path;
+        $media->setPath($path);
+        $media->setMime($file->getMimeType());
+        $media->setSource($this->getName());
+
+        return $media;
     }
 
     public function has(Media $media) : bool
@@ -71,16 +80,16 @@ class Source
 
     public function read(Media $media)
     {
-        $fileContent = $this->filesystem->read($media->getPath());
-
-        return $fileContent;
+        return $this->filesystem->read($media->getPath());
     }
 
-    public function delete(string $path)
+    public function delete(Media $media)
     {
-        $delete = $this->filesystem->delete($path);
+        if (!$this->has($media)) {
+            return;
+        }
 
-        return $delete;
+        $this->filesystem->delete($media->getPath());
     }
 
 }

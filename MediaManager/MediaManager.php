@@ -61,16 +61,6 @@ class MediaManager
         ]);
     }
 
-    public function uploadAndPrepareMediaForSave(UploadedFile $file, Media $media)
-    {
-        $source = $this->getSource($media->getSource());
-
-        $path = $source->upload($file);
-
-        $media->setMime($file->getMimeType());
-        $media->setPath($path);
-    }
-
     public function prepareFolderForm(?Folder $folder, string $sourceName, ?string $parentFolderId = null): Form
     {
         if (!$folder) {
