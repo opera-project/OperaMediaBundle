@@ -65,7 +65,7 @@ class AdminController extends Controller
     
             return $this->redirectToRoute('opera_admin_media_list', [
                 'source_name' => $media->getSource(),
-                'folder_id' => $media->getFolder()->getId(),
+                'folder_id' => $media->getFolder() ? $media->getFolder()->getId() : null,
             ]);
         }
 
