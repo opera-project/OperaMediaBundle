@@ -1,5 +1,5 @@
 {
-    "name": "opera-project/opera-media-bundle",
+    "name": "opera-project/media-bundle",
     "description": "Easy manage media with opera cms",
     "type": "symfony-bundle",
     "license": "MIT",
