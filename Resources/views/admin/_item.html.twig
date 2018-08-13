@@ -15,27 +15,35 @@
                 <img src="{{ asset(item.path) | imagine_filter('opera_thumbnail') }}" />
             {% endif %}
         </div>
+
         <div class="btn-group" role="group" aria-label="...">
-            <a class="btn btn-default" href="{% if item.type == 'folder' %}
-                        {{ path('opera_admin_media_folder_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
-                        {% else %}
-                        {{ path('opera_admin_media_media_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
-                        {% endif %}
-            ">
-                Edit
-            </a>
-            <a class="btn btn-danger" href="{% if item.type == 'folder' %}
-                        {{ path('opera_admin_media_delete_folder', { id: item.id }) }}
-                        {% else %}
-                        {{ path('opera_admin_media_delete_media', { id: item.id }) }}
-                        {% endif %}
-            ">
-                Delete
-            </a>
+            {% if mode == 'select' %}
+                <a class="btn btn-success" onclick="selectMedia('{{item.id}}', '{{form.vars.name}}')">
+                    Select
+                </a>
+            {% else %}
+                <a class="btn btn-default" href="{% if item.type == 'folder' %}
+                            {{ path('opera_admin_media_folder_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
+                            {% else %}
+                            {{ path('opera_admin_media_media_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
+                            {% endif %}
+                ">
+                    Edit
+                </a>
+                <a class="btn btn-danger" href="{% if item.type == 'folder' %}
+                            {{ path('opera_admin_media_delete_folder', { id: item.id }) }}
+                            {% else %}
+                            {{ path('opera_admin_media_delete_media', { id: item.id }) }}
+                            {% endif %}
+                ">
+                    Delete
+                </a>
+            {% endif %}
 
         </div>
     </div>
 </div>
+
 <style>
     .panel {
         display: inline-block;
@@ -50,3 +58,9 @@
         text-align: center;
     }
 </style>
+
+<script>
+function selectMedia(itemId, inputName) {
+    document.querySelector('#' + inputName).value = itemId;
+}
+</script>

@@ -14,7 +14,6 @@
         <div>
 
         <div class="tab-content">
-
             <div class="well">
                 {% trans from 'OperaMedia' %}Current Folder: {% endtrans %}
                 {{ selected_folder ? selected_folder.name : 'root' }}<br />
@@ -35,7 +34,7 @@
             </div>
 
             {% for item in items %}
-                {% include "@OperaMedia/admin/_item.html.twig" %}
+                {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new') } %}
             {% endfor %}
 
         </div>

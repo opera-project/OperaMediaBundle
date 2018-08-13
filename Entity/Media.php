@@ -149,4 +149,9 @@ class Media
         return 'media';
     }
 
+    public function __toString(): string
+    {
+        return 'Media '.$this->getSource().'.'.$this->getName();
+    }
+
 }

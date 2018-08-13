@@ -7,16 +7,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Doctrine\ORM\EntityRepository;
 use Opera\MediaBundle\MediaManager\SourceManager;
 
 use Opera\MediaBundle\Entity\Folder;
 use Opera\MediaBundle\Entity\Media;
-
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormError;
 
 
 class MediaType extends AbstractType
@@ -41,6 +36,10 @@ class MediaType extends AbstractType
                 }
             ));
         }
+
+        //todoremove
+        // $builder->add('blah', MediaEntityType::class, ['mapped' => false]);
+
     }
 
     public function configureOptions(OptionsResolver $resolver)

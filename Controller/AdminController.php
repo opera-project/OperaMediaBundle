@@ -41,7 +41,7 @@ class AdminController extends Controller
     {
         $form = $this->createMediaForm($folderRepository, $formFactory, $request, $media);
         $result = $this->handleForm($sourceManager, $form, $request);
-        
+
         return $result ? $result : [
             'media' => $media,
             'form' => $form->createView(),
