@@ -15,6 +15,7 @@ use Opera\MediaBundle\Form\FolderType;
 use Opera\MediaBundle\Form\MediaType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 
 class AdminController extends Controller
 {
@@ -53,7 +54,7 @@ class AdminController extends Controller
      * @Entity("folder", expr="folder_id ? repository.findOneBySourceAndId(source_name, folder_id) : null")
      * @Template
      */
-    public function view(?string $source_name = null, ?Folder $folder = null, SourceManager $sourceManager)
+    public function view(?string $source_name = null, ?Folder $folder = null, SourceManager $sourceManager, Request $request)
     {
         $sources = $sourceManager->getSources();
         $selectedSource = $source_name ? $sourceManager->getSource($source_name) : array_values($sources)[0];
@@ -61,6 +62,7 @@ class AdminController extends Controller
 
         return [
             'sources' => $sources,
+            'mode' => $request->isXmlHttpRequest() ? 'ajax' : ($request->get('mode') ? $request->get('mode') : 'html'),
             'selected_folder' => $folder,
             'selected_source' => $selectedSource,
             'items' => $items,
@@ -71,7 +73,7 @@ class AdminController extends Controller
     /**
      * @Route("/media/folder/{id}/delete", name="opera_admin_media_delete_folder")
      */
-    public function deleteFolder(Folder $folder)
+    public function deleteFolder(Folder $folder, Request $request)
     {
         $sourceName = $folder->getSource();
         $parentFolderId = $folder->getParent() ? $folder->getParent()->getId() : null;
@@ -82,6 +84,7 @@ class AdminController extends Controller
 
         return $this->redirectToRoute('opera_admin_media_list', [
             'source_name' => $sourceName,
+            'mode'      => $request->isXmlHttpRequest() ? 'ajax' : 'html',
             'folder_id' => $parentFolderId,
         ]);
     }
@@ -89,7 +92,7 @@ class AdminController extends Controller
     /**
      * @Route("/media/media/{id}/delete", name="opera_admin_media_delete_media")
      */
-    public function deleteMedia(SourceManager $sourceManager, Media $media)
+    public function deleteMedia(SourceManager $sourceManager, Media $media, Request $request)
     {
         $sourceName = $media->getSource();
         $parentFolderId = $media->getFolder() ? $media->getFolder()->getId() : null;
@@ -103,15 +106,17 @@ class AdminController extends Controller
 
         return $this->redirectToRoute('opera_admin_media_list', [
             'source_name' => $sourceName,
+            'mode'      => $request->isXmlHttpRequest() ? 'ajax' : 'html',
             'folder_id' => $parentFolderId,
         ]);
     }
 
-    private function handleForm(SourceManager $sourceManager, $form, $request)
+    private function handleForm(SourceManager $sourceManager, FormInterface $form, Request $request)
     {
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $item = $form->getData();
 
             if ($item instanceof Media && $request->files && $request->files->get('media') && isset($request->files->get('media')['path'])) {
@@ -124,6 +129,7 @@ class AdminController extends Controller
     
             return $this->redirectToRoute('opera_admin_media_list', [
                 'source_name' => $item->getSource(),
+                'mode'      => $request->isXmlHttpRequest() ? 'ajax' : 'html',
                 'folder_id' => $item->getFolder() ? $item->getFolder()->getId() : null,
             ]);
         }
@@ -135,10 +141,13 @@ class AdminController extends Controller
     {
         if (!$folder) {
             $folder = new Folder();
-            $folder->setSource($request->get('source'));
+
+            if ($request->get('source')) {
+                $folder->setSource($request->get('source'));
+            }
             $folder->setParent($request->get('parentFolder') ? $folderRepository->findOneBySourceAndId($request->get('source'), $request->get('parentFolder')) : null);
 
-            return  $formFactory->create(FolderType::class, $folder);
+            return $formFactory->create(FolderType::class, $folder);
         }
         
         return $formFactory->create(FolderType::class, $folder, [

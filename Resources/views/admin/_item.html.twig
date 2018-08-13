@@ -1,7 +1,7 @@
 <div class="panel {% if item.type == 'folder' %}panel-info{% else %}panel-default{% endif %}">
     <div class="panel-heading">
     {% if item.type == 'folder' %}
-        <a href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: item.id }) }}">
+        <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: item.id }) }}">
             <strong>{{ item.name }}</strong>
         </a>
         <span class="badge">{{ item.childs|length + item.medias|length }}</span>
@@ -17,29 +17,28 @@
         </div>
 
         <div class="btn-group" role="group" aria-label="...">
-            {% if mode == 'select' %}
-                <a class="btn btn-success" onclick="selectMedia('{{item.id}}', '{{form.vars.name}}')">
+            <a data-ajax-link class="btn btn-default" href="{% if item.type == 'folder' %}
+                        {{ path('opera_admin_media_folder_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
+                        {% else %}
+                        {{ path('opera_admin_media_media_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
+                        {% endif %}
+            ">
+                Edit
+            </a>
+            {% if mode == 'ajax' and item.type == 'media' %}
+                <a class="btn btn-success" data-select-media="{{item.id}}">
                     Select
-                </a>
-            {% else %}
-                <a class="btn btn-default" href="{% if item.type == 'folder' %}
-                            {{ path('opera_admin_media_folder_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
-                            {% else %}
-                            {{ path('opera_admin_media_media_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
-                            {% endif %}
-                ">
-                    Edit
-                </a>
-                <a class="btn btn-danger" href="{% if item.type == 'folder' %}
-                            {{ path('opera_admin_media_delete_folder', { id: item.id }) }}
-                            {% else %}
-                            {{ path('opera_admin_media_delete_media', { id: item.id }) }}
-                            {% endif %}
-                ">
-                    Delete
                 </a>
             {% endif %}
 
+            <a data-ajax-link class="btn btn-danger" href="{% if item.type == 'folder' %}
+                        {{ path('opera_admin_media_delete_folder', { id: item.id }) }}
+                        {% else %}
+                        {{ path('opera_admin_media_delete_media', { id: item.id }) }}
+                        {% endif %}
+            ">
+                Delete
+            </a>
         </div>
     </div>
 </div>

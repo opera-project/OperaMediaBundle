@@ -5,7 +5,7 @@
             <ul class="nav nav-tabs">
                 {% for source in sources %}
                     <li class="{% if source.name == selected_source.name %}active{% endif %}">
-                        <a href="{{ path('opera_admin_media_list', { source_name: source.name }) }}">
+                        <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: source.name }) }}">
                             <strong>{{ source.name }}</strong>
                         </a>
                     </li>
@@ -20,15 +20,15 @@
 
                 {% if selected_folder %}
                     {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %}
-                    <a href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
+                    <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
                         {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
                     </a>
                 {% endif %}
 
-                <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
                     {% trans from 'OperaMedia' %}New Folder{% endtrans %}
                 </a>
-                <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
                     {% trans from 'OperaMedia' %}New Media{% endtrans %}
                 </a>
             </div>

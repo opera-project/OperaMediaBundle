@@ -1,30 +1,79 @@
 {% block media_entity_widget %}
     <div class="media_entity_widget">
-
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#mediaPickerModal">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mediaPickerModal{{form.vars.id}}">
             {% trans from 'OperaMedia' %}Choose Media{% endtrans %}
         </button>
+
+        <img />
         
-        <input type="hidden" id="{{form.vars.name}}" name="{{form.vars.full_name}}">
+        {% if form.vars.current_image %}
+            <img src="{{ asset(form.vars.current_image.path) | imagine_filter('opera_thumbnail') }}" />
+        {% endif %} 
+
+        <input type="hidden" id="{{form.vars.id}}" name="{{form.vars.full_name}}">
 
         <!-- Modal -->
-        <div class="modal fade" id="mediaPickerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal fade" id="mediaPickerModal{{form.vars.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel{{form.vars.id}}">
             <div class="modal-dialog" role="document">
                 <div class="modal-content modal-lg">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">{% trans from 'OperaMedia' %}Choose Media{% endtrans %}</h4>
+                    <h4 class="modal-title" id="myModalLabel{{form.vars.id}}">{% trans from 'OperaMedia' %}Choose Media{% endtrans %}</h4>
                 </div>
                 <div class="modal-body">
-                    {% include "@OperaMedia/admin/_media_list.html.twig" with {'mode': 'select'} %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    {% include "@OperaMedia/admin/_media_list.html.twig" with { 'mode': 'ajax' } %}
                 </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script>
+        $(document).ready(function() {
+            $("#mediaPickerModal{{form.vars.id}}").appendTo(document.body);
+
+            $(document).on('click', '#mediaPickerModal{{form.vars.id}} [data-select-media]', function (event) {
+                event.preventDefault();
+
+                $("#{{form.vars.id}}").val($(this).data('select-media'));
+            });
+
+            $(document).on('click', '#mediaPickerModal{{form.vars.id}} [data-ajax-link]', function (event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('href'),
+                    success: function (data) {
+                        $(document).find('.modal-body').html($(data).find('#main').html());
+                    }
+                });
+
+            });
+
+            $(document).on('submit', '#mediaPickerModal{{form.vars.id}} .modal-body form', function (event) {
+                event.preventDefault();
+
+                var options = {
+                    url: event.currentTarget.action,
+                    method: 'POST',
+                    data: $(event.currentTarget).serialize(),
+                    cache: false,
+                    success: function (data) {
+                        $(document).find('.modal-body').html($(data).find('#main').html());
+                    }
+                };
+
+                if (event.currentTarget.enctype) {
+                    options.contentType = false;
+                    var formData = new FormData($(event.currentTarget)[0]);
+                    options.data = formData;
+                    options.processData = false;
+                }
+                
+                $.ajax(options);
+            });
+
+        });
+    </script>
 {% endblock %}

@@ -7,14 +7,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Doctrine\ORM\EntityRepository;
 use Opera\MediaBundle\MediaManager\SourceManager;
 
 use Opera\MediaBundle\Entity\Folder;
-
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormError;
 
 class FolderType extends AbstractType
 {
@@ -22,10 +19,6 @@ class FolderType extends AbstractType
     {
         $builder->add('name')
                 ->add('slug');
-
-        if ($options['mode'] === 'new') {
-            $builder->add('source', SourceType::class, array('disabled' => true));
-        }
 
         if ($options['mode'] === 'edit') {
             $builder->add('parent', EntityType::class, array(

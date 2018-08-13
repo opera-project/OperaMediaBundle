@@ -8,11 +8,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Doctrine\ORM\EntityRepository;
-use Opera\MediaBundle\MediaManager\SourceManager;
 
 use Opera\MediaBundle\Entity\Folder;
 use Opera\MediaBundle\Entity\Media;
-
 
 class MediaType extends AbstractType
 {
@@ -36,9 +34,6 @@ class MediaType extends AbstractType
                 }
             ));
         }
-
-        //todoremove
-        // $builder->add('blah', MediaEntityType::class, ['mapped' => false]);
 
     }
 

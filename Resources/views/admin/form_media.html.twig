@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block main %}
-    {{ form_start(form, { attr: { class: 'form-horizontal new-form' }}) }}
+    {{ form_start(form, { attr: { class: 'form-horizontal new-form',  action: path(app.request.get('_route'), { source: app.request.get('source'), parentFolder: app.request.get('parentFolder') }) }}) }}
         {{ form_rest(form) }}
                     
         <button type="submit" class="btn btn-primary action-save">
