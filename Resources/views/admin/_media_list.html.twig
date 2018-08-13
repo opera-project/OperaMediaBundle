@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col-xs-12">
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                {% for source in sources %}
+                    <li class="{% if source.name == selected_source.name %}active{% endif %}">
+                        <a href="{{ path('opera_admin_media_list', { source_name: source.name }) }}">
+                            <strong>{{ source.name }}</strong>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        <div>
+
+        <div class="tab-content">
+
+            <div class="well">
+                {% trans from 'OperaMedia' %}Current Folder: {% endtrans %}
+                {{ selected_folder ? selected_folder.name : 'root' }}<br />
+
+                {% if selected_folder %}
+                    {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %}
+                    <a href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
+                        {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
+                    </a>
+                {% endif %}
+
+                <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                    {% trans from 'OperaMedia' %}New Folder{% endtrans %}
+                </a>
+                <a class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                    {% trans from 'OperaMedia' %}New Media{% endtrans %}
+                </a>
+            </div>
+
+            {% for item in items %}
+                {% include "@OperaMedia/admin/_item.html.twig" %}
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
