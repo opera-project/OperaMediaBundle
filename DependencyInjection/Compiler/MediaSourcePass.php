@@ -4,7 +4,7 @@ namespace Opera\MediaBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Opera\MediaBundle\MediaManager\MediaManager;
+use Opera\MediaBundle\MediaManager\SourceManager;
 use Symfony\Component\DependencyInjection\Reference;
 
 class MediaSourcePass implements CompilerPassInterface
@@ -12,7 +12,7 @@ class MediaSourcePass implements CompilerPassInterface
 
     public function process(ContainerBuilder $container)
     {
-        $manager = $container->getDefinition(MediaManager::class);
+        $manager = $container->getDefinition(SourceManager::class);
 
         // or processing tagged services:
         foreach ($container->findTaggedServiceIds('opera.media_source') as $id => $tags) {

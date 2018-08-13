@@ -183,6 +183,11 @@ class Folder
         return $this->parent;
     }
 
+    public function getFolder(): ?Folder
+    {
+        return $this->getParent();
+    }
+
     public function setParent(?self $parent): self
     {
         if ($parent == null || ($this->getSource() === $parent->getSource())) {

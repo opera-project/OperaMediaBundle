@@ -5,13 +5,16 @@ namespace Opera\MediaBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Opera\MediaBundle\Repository\FolderRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Opera\MediaBundle\MediaManager\MediaManager;
 use Symfony\Component\Routing\Annotation\Route;
+use Opera\MediaBundle\MediaManager\SourceManager;
+use Opera\MediaBundle\MediaManager\Source;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Opera\MediaBundle\Entity\Folder;
 use Opera\MediaBundle\Entity\Media;
+use Opera\MediaBundle\Form\FolderType;
+use Opera\MediaBundle\Form\MediaType;
 use Symfony\Component\HttpFoundation\Request;
-use Opera\MediaBundle\MediaManager\Source;
+use Symfony\Component\Form\FormFactoryInterface;
 
 class AdminController extends Controller
 {
@@ -19,25 +22,12 @@ class AdminController extends Controller
      * @Route("/media/folder/form/{id}", defaults={ "id": null }, name="opera_admin_media_folder_form")
      * @Template
      */
-    public function formFolder(MediaManager $mediaManager, Folder $folder = null, Request $request)
+    public function formFolder(FolderRepository $folderRepository, FormFactoryInterface $formFactory, SourceManager $sourceManager, Request $request, Folder $folder = null)
     {
-        $form = $mediaManager->prepareFolderForm($folder, $request->get('source'), $request->get('parentFolder'));
-        $form->handleRequest($request);
+        $form = $this->createFolderForm($folderRepository, $formFactory, $request, $folder);
+        $result = $this->handleForm($sourceManager, $form, $request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $folder = $form->getData();
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($folder);
-            $entityManager->flush();
-    
-            return $this->redirectToRoute('opera_admin_media_list', [
-                'source_name' => $folder->getSource(),
-                'folder_id' => $folder->getParent() ? $folder->getParent()->getId() : null,
-            ]);
-        }
-
-        return [
+        return $result ? $result : [
             'folder' => $folder,
             'form' => $form->createView(),
         ];
@@ -47,29 +37,12 @@ class AdminController extends Controller
      * @Route("/media/media/form/{id}", defaults={ "id": null }, name="opera_admin_media_media_form")
      * @Template
      */
-    public function formMedia(MediaManager $mediaManager, Request $request, ?Media $media = null)
+    public function formMedia(FolderRepository $folderRepository, FormFactoryInterface $formFactory, SourceManager $sourceManager, Request $request, ?Media $media = null)
     {
-        $form = $mediaManager->prepareMediaForm($media, $request->get('source'), $request->get('parentFolder'));
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($request->files && $request->files->get('media') && isset($request->files->get('media')['path'])) {
-                $media = $form->getData();
-                $mediaManager->getSource($media->getSource())->upload($media);
-            }
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($media);
-            $entityManager->flush();
-    
-            return $this->redirectToRoute('opera_admin_media_list', [
-                'source_name' => $media->getSource(),
-                'folder_id' => $media->getFolder() ? $media->getFolder()->getId() : null,
-            ]);
-        }
-
-        return [
+        $form = $this->createMediaForm($folderRepository, $formFactory, $request, $media);
+        $result = $this->handleForm($sourceManager, $form, $request);
+        
+        return $result ? $result : [
             'media' => $media,
             'form' => $form->createView(),
         ];
@@ -80,10 +53,10 @@ class AdminController extends Controller
      * @Entity("folder", expr="folder_id ? repository.findOneBySourceAndId(source_name, folder_id) : null")
      * @Template
      */
-    public function view(?string $source_name = null, ?Folder $folder = null, MediaManager $mediaManager)
+    public function view(?string $source_name = null, ?Folder $folder = null, SourceManager $sourceManager)
     {
-        $sources = $mediaManager->getSources();
-        $selectedSource = $source_name ? $mediaManager->getSource($source_name) : array_values($sources)[0];
+        $sources = $sourceManager->getSources();
+        $selectedSource = $source_name ? $sourceManager->getSource($source_name) : array_values($sources)[0];
         $items = $selectedSource->list($folder);
 
         return [
@@ -116,12 +89,12 @@ class AdminController extends Controller
     /**
      * @Route("/media/media/{id}/delete", name="opera_admin_media_delete_media")
      */
-    public function deleteMedia(MediaManager $mediaManager, Media $media)
+    public function deleteMedia(SourceManager $sourceManager, Media $media)
     {
         $sourceName = $media->getSource();
         $parentFolderId = $media->getFolder() ? $media->getFolder()->getId() : null;
         
-        $source = $mediaManager->getSource($media->getSource());
+        $source = $sourceManager->getSource($media->getSource());
         $source->delete($media);
 
         $em = $this->getDoctrine()->getManager();
@@ -131,6 +104,63 @@ class AdminController extends Controller
         return $this->redirectToRoute('opera_admin_media_list', [
             'source_name' => $sourceName,
             'folder_id' => $parentFolderId,
+        ]);
+    }
+
+    private function handleForm(SourceManager $sourceManager, $form, $request)
+    {
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $item = $form->getData();
+
+            if ($item instanceof Media && $request->files && $request->files->get('media') && isset($request->files->get('media')['path'])) {
+                $sourceManager->getSource($item->getSource())->upload($item);
+            }
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($item);
+            $entityManager->flush();
+    
+            return $this->redirectToRoute('opera_admin_media_list', [
+                'source_name' => $item->getSource(),
+                'folder_id' => $item->getFolder() ? $item->getFolder()->getId() : null,
+            ]);
+        }
+
+        return null;
+    }
+
+    private function createFolderForm(FolderRepository $folderRepository, FormFactoryInterface $formFactory, Request $request, ?Folder $folder)
+    {
+        if (!$folder) {
+            $folder = new Folder();
+            $folder->setSource($request->get('source'));
+            $folder->setParent($request->get('parentFolder') ? $folderRepository->findOneBySourceAndId($request->get('source'), $request->get('parentFolder')) : null);
+
+            return  $formFactory->create(FolderType::class, $folder);
+        }
+        
+        return $formFactory->create(FolderType::class, $folder, [
+            'mode' => 'edit',
+            'source' => $folder->getSource(),
+            'folder' => $folder,
+        ]);
+    }
+
+    private function createMediaForm(FolderRepository $folderRepository, FormFactoryInterface $formFactory, Request $request, ?Media $media)
+    {
+        if (!$media) {
+            $media = new Media();
+            $media->setSource($request->get('source'));
+            $media->setFolder($request->get('parentFolder') ? $folderRepository->findOneBySourceAndId($request->get('source'), $request->get('parentFolder')) : null);
+            
+            return $formFactory->create(MediaType::class, $media);
+        }
+
+        return $form = $formFactory->create(MediaType::class, $media, [
+            'mode' => 'edit',
+            'source' => $media->getSource(),
         ]);
     }
 

@@ -4,20 +4,20 @@ namespace Opera\MediaBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Opera\MediaBundle\MediaManager\MediaManager;
+use Opera\MediaBundle\MediaManager\SourceManager;
 
 class IsMediaSourceValidator extends ConstraintValidator
 {
-    private $mediaManager;
+    private $sourceManager;
 
-    public function __construct(MediaManager $mediaManager)
+    public function __construct(SourceManager $sourceManager)
     {
-        $this->mediaManager = $mediaManager;
+        $this->sourceManager = $sourceManager;
     }
 
     public function validate($value, Constraint $constraint)
     {
-        if (!$this->mediaManager->hasSource($value)) {
+        if (!$this->sourceManager->hasSource($value)) {
             $this->context->addViolation($constraint->message, ['{{ string }}' => $value]);
         }
     }

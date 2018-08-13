@@ -23,7 +23,7 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    Opera\MediaBundle\MediaManager\MediaManager:
+    Opera\MediaBundle\MediaManager\SourceManager:
         public: true
         
     Opera\MediaBundle\Listener\FolderListener:

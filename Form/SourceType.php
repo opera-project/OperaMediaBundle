@@ -4,15 +4,15 @@ namespace Opera\MediaBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Opera\MediaBundle\MediaManager\MediaManager;
+use Opera\MediaBundle\MediaManager\SourceManager;
 
 class SourceType extends AbstractType
 {
-    private $mediaManager;
+    private $sourceManager;
 
-    public function __construct(MediaManager $mediaManager)
+    public function __construct(SourceManager $sourceManager)
     {
-        $this->mediaManager = $mediaManager;
+        $this->sourceManager = $sourceManager;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -20,7 +20,7 @@ class SourceType extends AbstractType
         $resolver->setDefaults([
             'choices' => array_map(function($value) {
                 return $value->getName();
-            }, $this->mediaManager->getSources()),
+            }, $this->sourceManager->getSources()),
         ]);
     }
 

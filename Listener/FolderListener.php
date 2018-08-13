@@ -4,7 +4,7 @@ namespace Opera\MediaBundle\Listener;
 
 use Opera\MediaBundle\Entity\Folder;
 use Doctrine\ORM\EntityManagerInterface;
-use Opera\MediaBundle\MediaManager\MediaManager;
+use Opera\MediaBundle\MediaManager\SourceManager;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
@@ -12,9 +12,9 @@ class FolderListener implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    private function getMediaManager() : MediaManager
+    private function getSourceManager() : SourceManager
     {
-        return $this->container->get(MediaManager::class);
+        return $this->container->get(SourceManager::class);
     }
 
     public function preRemove(Folder $folder)
@@ -24,7 +24,7 @@ class FolderListener implements ContainerAwareInterface
         }
 
         foreach ($folder->getMedias() as $media) {
-            $source = $this->getMediaManager()->getSource($media->getSource());
+            $source = $this->getSourceManager()->getSource($media->getSource());
             $source->delete($media);
         }
     }
