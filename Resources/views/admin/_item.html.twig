@@ -26,9 +26,24 @@
                 Edit
             </a>
             {% if mode == 'ajax' and item.type == 'media' %}
-                <a class="btn btn-success" data-select-media="{{item.id}}">
+
+                <a class="btn btn-success select-media-button" data-select-media="{{item.id}}" data-select-media-preview="{{ asset(item.path) | imagine_filter('opera_thumbnail') }}">
                     Select
                 </a>
+
+                <div class="dropdown pull-left select-media-drop-down">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton{{ item.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Select
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ item.id }}">
+                        {% if filter_sets is defined %}
+                            {% for filter_set in filter_sets|keys %}
+                                <li><a class="dropdown-item" data-select-media="{{item.id}}" data-select-media-preview="{{ path('liip_imagine_filter', { path: item.path, filter: filter_set }) }}">{{ filter_set }}</a></li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
             {% endif %}
 
             <a data-ajax-link class="btn btn-danger" href="{% if item.type == 'folder' %}
@@ -58,8 +73,3 @@
     }
 </style>
 
-<script>
-function selectMedia(itemId, inputName) {
-    document.querySelector('#' + inputName).value = itemId;
-}
-</script>

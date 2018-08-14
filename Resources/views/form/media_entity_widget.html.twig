@@ -5,12 +5,8 @@
             {% trans from 'OperaMedia' %}Choose Media{% endtrans %}
         </button>
 
-        <img />
+        <img {% if form.vars.current_image %}src="{{ asset(form.vars.current_image.path) | imagine_filter('opera_thumbnail') }}"{% endif %}  />
         
-        {% if form.vars.current_image %}
-            <img src="{{ asset(form.vars.current_image.path) | imagine_filter('opera_thumbnail') }}" />
-        {% endif %} 
-
         <input type="hidden" id="{{form.vars.id}}" name="{{form.vars.full_name}}">
 
         <!-- Modal -->
@@ -29,51 +25,20 @@
         </div>
     </div>
 
+    <script src="{{ asset('bundles/operamedia/opera_media_picker/media-picker.js') }}"></script>
+
     <script>
-        $(document).ready(function() {
-            $("#mediaPickerModal{{form.vars.id}}").appendTo(document.body);
 
-            $(document).on('click', '#mediaPickerModal{{form.vars.id}} [data-select-media]', function (event) {
-                event.preventDefault();
-
-                $("#{{form.vars.id}}").val($(this).data('select-media'));
-            });
-
-            $(document).on('click', '#mediaPickerModal{{form.vars.id}} [data-ajax-link]', function (event) {
-                event.preventDefault();
-
-                $.ajax({
-                    url: $(this).attr('href'),
-                    success: function (data) {
-                        $(document).find('.modal-body').html($(data).find('#main').html());
-                    }
-                });
-
-            });
-
-            $(document).on('submit', '#mediaPickerModal{{form.vars.id}} .modal-body form', function (event) {
-                event.preventDefault();
-
-                var options = {
-                    url: event.currentTarget.action,
-                    method: 'POST',
-                    data: $(event.currentTarget).serialize(),
-                    cache: false,
-                    success: function (data) {
-                        $(document).find('.modal-body').html($(data).find('#main').html());
-                    }
-                };
-
-                if (event.currentTarget.enctype) {
-                    options.contentType = false;
-                    var formData = new FormData($(event.currentTarget)[0]);
-                    options.data = formData;
-                    options.processData = false;
-                }
-                
-                $.ajax(options);
-            });
-
+    $(document).ready(function() {
+        $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
+        selectMedia('{{form.vars.id}}');
+        ajaxMediaLink('{{form.vars.id}}', () => {
+            $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
         });
+        preventDefaultSubmit('{{form.vars.id}}', () => {
+            $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
+        });
+    });
+
     </script>
 {% endblock %}

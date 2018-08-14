@@ -66,6 +66,7 @@ class AdminController extends Controller
             'selected_folder' => $folder,
             'selected_source' => $selectedSource,
             'items' => $items,
+            'filter_sets' => $this->container->getParameter('liip_imagine.filter_sets'),
         ];
     }
 
