@@ -56,8 +56,8 @@ CKEDITOR.plugins.add( 'opera_media_picker', {
 		$.ajax({
             url: "/admin/media/",
             success: function (data) {
-				$(document).find('.modal-body').html($(data).find('#main').html());
-				$(document).find('#mediaPickerModal' + editor.id + ' .select-media-button').remove();
+				$('#mediaPickerModal' + editor.id).find('.modal-body').html($(data).find('#main').html());
+				$('#mediaPickerModal' + editor.id + ' .select-media-button').remove();
             }
         });
     }

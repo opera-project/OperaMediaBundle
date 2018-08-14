@@ -18,7 +18,7 @@
                     <h4 class="modal-title" id="myModalLabel{{form.vars.id}}">{% trans from 'OperaMedia' %}Choose Media{% endtrans %}</h4>
                 </div>
                 <div class="modal-body">
-                    {% include "@OperaMedia/admin/_media_list.html.twig" with { 'mode': 'ajax' } %}
+                    {% include "@OperaMedia/admin/_media_list.html.twig" with { 'mode': 'ajax', 'with_formats': false } %}
                 </div>
                 </div>
             </div>
@@ -30,7 +30,6 @@
     <script>
 
     $(document).ready(function() {
-        $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
         selectMedia('{{form.vars.id}}');
         ajaxMediaLink('{{form.vars.id}}', () => {
             $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();

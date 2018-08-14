@@ -37,7 +37,7 @@ class ImageBlock extends BaseBlock implements BlockTypeInterface
 
     public function getVariables(Block $block) : array
     {
-        $config = unserialize($block->getConfiguration());
+        $config = $block->getConfiguration();
 
         return [
             'media' => isset($config['image']) ? $this->mediaRepository->find($config['image']) : null

@@ -26,11 +26,12 @@
                 Edit
             </a>
             {% if mode == 'ajax' and item.type == 'media' %}
-
+                
                 <a class="btn btn-success select-media-button" data-select-media="{{item.id}}" data-select-media-preview="{{ asset(item.path) | imagine_filter('opera_thumbnail') }}">
                     Select
                 </a>
 
+                {% if with_formats is not defined or with_formats %}
                 <div class="dropdown pull-left select-media-drop-down">
                     <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton{{ item.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Select
@@ -44,6 +45,7 @@
                         {% endif %}
                     </ul>
                 </div>
+                {% endif %}
             {% endif %}
 
             <a data-ajax-link class="btn btn-danger" href="{% if item.type == 'folder' %}

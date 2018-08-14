@@ -1,1 +1,3 @@
-<img src="{{ asset(media.path) | imagine_filter('opera_thumbnail') }}" />
+{% if media %}
+    <img src="{{ asset(media.path) | imagine_filter('opera_thumbnail') }}" />
+{% endif %}
