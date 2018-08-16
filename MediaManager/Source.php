@@ -73,7 +73,7 @@ class Source
         return $media;
     }
 
-    public function has(Media $media) : bool
+    public function has(Media $media)
     {
         return $this->filesystem->has($media->getPath());
     }

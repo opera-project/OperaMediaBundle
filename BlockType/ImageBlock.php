@@ -7,7 +7,7 @@ use Opera\CoreBundle\BlockType\BlockTypeInterface;
 use Opera\CoreBundle\Form\Type\CkEditorOrTextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Opera\CoreBundle\Entity\Block;
-use Opera\MediaBundle\Form\MediaEntityType;
+use Opera\MediaBundle\Form\MediaTextType;
 
 use Opera\MediaBundle\Repository\MediaRepository;
 
@@ -32,7 +32,7 @@ class ImageBlock extends BaseBlock implements BlockTypeInterface
 
     public function createAdminConfigurationForm(FormBuilderInterface $builder)
     {
-        $builder->add('image', MediaEntityType::class);
+        $builder->add('image', MediaTextType::class);
     }
 
     public function getVariables(Block $block) : array

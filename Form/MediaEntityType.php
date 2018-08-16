@@ -6,10 +6,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Opera\MediaBundle\Entity\Media;
 use Opera\MediaBundle\MediaManager\SourceManager;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class MediaEntityType extends AbstractType
@@ -39,7 +38,12 @@ class MediaEntityType extends AbstractType
 
     public function getParent()
     {
-        return TextType::class;
+        return EntityType::class;
+    }
+
+    public function getBlockPrefix()
+    {
+        return 'media_entity';
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)
