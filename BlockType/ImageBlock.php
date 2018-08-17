@@ -47,7 +47,10 @@ class ImageBlock extends BaseBlock implements BlockTypeInterface
 
     public function configure(NodeDefinition $rootNode)
     {
-        // @todo
+        $rootNode
+            ->children()
+                ->scalarNode('image')->defaultValue('')->end()
+            ->end();
     }
 
 }
