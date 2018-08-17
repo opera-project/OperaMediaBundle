@@ -8,6 +8,7 @@ use Opera\CoreBundle\Form\Type\CkEditorOrTextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Opera\CoreBundle\Entity\Block;
 use Opera\MediaBundle\Form\MediaTextType;
+use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 
 use Opera\MediaBundle\Repository\MediaRepository;
 
@@ -42,6 +43,11 @@ class ImageBlock extends BaseBlock implements BlockTypeInterface
         return [
             'media' => isset($config['image']) ? $this->mediaRepository->find($config['image']) : null
         ];
+    }
+
+    public function configure(NodeDefinition $rootNode)
+    {
+        // @todo
     }
 
 }
