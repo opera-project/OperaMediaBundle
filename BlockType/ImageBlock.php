@@ -36,7 +36,7 @@ class ImageBlock extends BaseBlock implements BlockTypeInterface
         $builder->add('image', MediaTextType::class);
     }
 
-    public function getVariables(Block $block) : array
+    public function execute(Block $block) : array
     {
         $config = $block->getConfiguration();
 
