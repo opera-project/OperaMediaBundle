@@ -92,4 +92,9 @@ class Source
         $this->filesystem->delete($media->getPath());
     }
 
+    public function size(Media $media)
+    {
+        return $this->filesystem->size($media->getPath());
+    }
+
 }
