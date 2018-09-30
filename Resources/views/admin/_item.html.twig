@@ -12,7 +12,7 @@
     <div class="panel-body">
         <div class="file-preview">
             {% if item.type == 'media' %}
-                <img src="{{ asset(item.path) | imagine_filter('opera_thumbnail') }}" />
+                <img src="{{ item.path | imagine_filter('opera_thumbnail') }}" />
             {% endif %}
         </div>
 
@@ -27,7 +27,7 @@
             </a>
             {% if mode == 'ajax' and item.type == 'media' %}
                 
-                <a class="btn btn-success select-media-button" data-select-media="{{item.id}}" data-select-media-preview="{{ asset(item.path) | imagine_filter('opera_thumbnail') }}">
+                <a class="btn btn-success select-media-button" data-select-media="{{item.id}}" data-select-media-preview="{{ item.path | imagine_filter('opera_thumbnail') }}">
                     Select
                 </a>
 

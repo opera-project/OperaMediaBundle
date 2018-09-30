@@ -5,7 +5,7 @@
             {% trans from 'OperaMedia' %}Choose Media{% endtrans %}
         </button>
 
-        <img {% if form.vars.current_image %}src="{{ asset(form.vars.current_image.path) | imagine_filter('opera_thumbnail') }}"{% endif %}  />
+        <img {% if form.vars.current_image %}src="{{ form.vars.current_image.path | imagine_filter('opera_thumbnail') }}"{% endif %}  />
         
         <input type="hidden" id="{{form.vars.id}}" name="{{form.vars.full_name}}">
 
