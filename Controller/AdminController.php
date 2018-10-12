@@ -58,14 +58,16 @@ class AdminController extends Controller
     {
         $sources = $sourceManager->getSources();
         $selectedSource = $source_name ? $sourceManager->getSource($source_name) : array_values($sources)[0];
-        $items = $selectedSource->list($folder);
+        $pagerFantaMedia = $selectedSource->listMedias($folder, $request->get('page', 1));
+        $folders = ($request->get('page') == 1 || !$request->get('page')) ? $selectedSource->listFolders($folder) : [];
 
         return [
             'sources' => $sources,
             'mode' => $request->isXmlHttpRequest() ? 'ajax' : ($request->get('mode') ? $request->get('mode') : 'html'),
             'selected_folder' => $folder,
             'selected_source' => $selectedSource,
-            'items' => $items,
+            'pagerFantaMedia' => $pagerFantaMedia,
+            'folders' => $folders,
             'filter_sets' => $this->container->getParameter('liip_imagine.filter_sets'),
         ];
     }

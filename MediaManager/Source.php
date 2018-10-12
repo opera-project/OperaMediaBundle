@@ -4,10 +4,12 @@ namespace Opera\MediaBundle\MediaManager;
 
 use Gaufrette\Filesystem;
 use Opera\MediaBundle\Repository\FolderRepository;
-use Opera\MediaBundle\Repository\MediaRepository;
+use Opera\MediaBundle\Repository\mediaRepository;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Opera\MediaBundle\Entity\Folder;
 use Opera\MediaBundle\Entity\Media;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
 
 class Source
 {
@@ -17,17 +19,17 @@ class Source
 
     private $folderRepository;
 
-    private $mediarepository;
+    private $mediaRepository;
 
     public function __construct(Filesystem $filesystem,
                                 string $name,
                                 FolderRepository $folderRepository, 
-                                MediaRepository $mediarepository)
+                                mediaRepository $mediaRepository)
     {
         $this->filesystem = $filesystem;
         $this->name = $name;
         $this->folderRepository = $folderRepository;
-        $this->mediarepository = $mediarepository;
+        $this->mediaRepository = $mediaRepository;
     }
 
     public function getName() : string
@@ -35,6 +37,9 @@ class Source
        return $this->name;
     }
 
+    /**
+     * List all media and folder of this source and folder. (by default: folder root (null))
+     */
     public function list(?Folder $folder = null) : array
     {
         if ($folder && $folder->getSource() != $this->getName()) {
@@ -43,13 +48,44 @@ class Source
 
         if ($folder === null) {
             $subfolders = $this->folderRepository->findBySourceRootFolder($this->name);
-            $mediaInFolder = $this->mediarepository->findBySourceRootFolder($this->name);
+            $mediaInFolder = $this->mediaRepository->findBySourceRootFolder($this->name);
         } else {
             $subfolders = $folder->getChilds()->getValues();
             $mediaInFolder = $folder->getMedias()->getValues();
         }
 
         return array_merge($subfolders ?? [], $mediaInFolder ?? []);
+    }
+
+    /**
+     * List all media of this source and folder using a pagination
+     */
+    public function listMedias(?Folder $folder = null, ?int $page = 1)
+    {
+        if ($folder && $folder->getSource() != $this->getName()) {
+            throw new \LogicException("Folder source ".$folder->getSource()." not from source ".$this->getName());
+        }
+
+        $qb = $this->mediaRepository->queryBuilderBySourceAndFolder($this->name, $folder);
+
+        $adapter = new DoctrineORMAdapter($qb);
+        $pagerfanta = new Pagerfanta($adapter);
+        $pagerfanta->setMaxPerPage(16);
+        $pagerfanta->setCurrentPage($page);
+
+        return $pagerfanta;
+    }
+
+    /**
+     * list all folders of this source and folder. No pagination
+     */
+    public function listFolders(?Folder $folder = null)
+    {
+        if ($folder) {
+            return $folder->getChilds()->getValues();
+        }
+
+        return $this->folderRepository->findBySourceRootFolder($this->name);
     }
 
     public function upload(Media $media) : Media

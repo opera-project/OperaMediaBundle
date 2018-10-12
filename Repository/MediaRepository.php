@@ -5,6 +5,7 @@ namespace Opera\MediaBundle\Repository;
 use Opera\MediaBundle\Entity\Media;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Opera\MediaBundle\Entity\Folder;
 
 /**
  * @method Media|null find($id, $lockMode = null, $lockVersion = null)
@@ -27,6 +28,22 @@ class MediaRepository extends ServiceEntityRepository
                     ->setParameter('sourceName', $sourceName)
                     ->getQuery()
                     ->getResult();
+    }
+
+    public function queryBuilderBySourceAndFolder($sourceName, Folder $folder = null)
+    {
+        $qb = $this->createQueryBuilder('m')
+                    ->andWhere('m.source = :sourceName')
+                    ->setParameter('sourceName', $sourceName);
+        
+        if ($folder) {
+            $qb->andWhere('m.folder_id = :folderId')
+                ->setParameter('folderId', $folder->getId());
+        } else {
+            $qb->andWhere('m.folder is NULL');
+        }
+        
+        return $qb->getQuery();
     }
 
 }
