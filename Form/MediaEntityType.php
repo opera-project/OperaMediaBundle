@@ -32,7 +32,8 @@ class MediaEntityType extends AbstractType
             'sources' => $sources,
             'selected_source' => array_values($sources)[0],
             'selected_folder' => null,
-            'items' => array_values($sources)[0]->list(),
+            'pagerFantaMedia' => array_values($sources)[0]->listMedias(null, 1),
+            'folders' => null,
         ]);
     }
 
@@ -53,7 +54,9 @@ class MediaEntityType extends AbstractType
         $view->vars['sources'] = $options['sources'];
         $view->vars['selected_source'] = $options['selected_source'];
         $view->vars['selected_folder'] = $options['selected_folder'];
-        $view->vars['items'] = $options['items'];
+        $view->vars['pagerFantaMedia'] = $options['pagerFantaMedia'];
+        $view->vars['folders'] = $options['folders'];
+
         $view->vars['current_image'] = $form->getData() ? $this->registry->getRepository(Media::class)->find($form->getData()) : null;
     }
 }
