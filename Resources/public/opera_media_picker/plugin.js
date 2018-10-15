@@ -53,8 +53,11 @@ CKEDITOR.plugins.add( 'opera_media_picker', {
 
 		document.body.appendChild(modal.querySelector('#mediaPickerModal' + editor.id));
 
+		let urlParams = new URLSearchParams(document.querySelector('script[src*=opera_media_picker]').attributes.src.value.split('?')[1]);
+		let baseUrl = urlParams.get('base_url') || '/admin';
+
 		$.ajax({
-            url: "/admin/media/",
+            url: baseUrl + "/media",
             success: function (data) {
 				$('#mediaPickerModal' + editor.id).find('.modal-body').html($(data).find('#main').html());
 				$('#mediaPickerModal' + editor.id + ' .select-media-button').remove();
