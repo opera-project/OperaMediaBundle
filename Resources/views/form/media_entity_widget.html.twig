@@ -6,6 +6,8 @@
         </button>
 
         <img {% if form.vars.current_image %}src="{{ form.vars.current_image.path | imagine_filter('opera_thumbnail') }}"{% endif %}  />
+        <a class="btn btn-danger remove-link" id="mediaPickerRemove{{form.vars.id}}" {% if not form.vars.current_image %}style="display:none;"{% endif %}>{% trans from 'OperaMedia' %}Remove{% endtrans %}</a>
+
         
         <input type="hidden" id="{{form.vars.id}}" name="{{form.vars.full_name}}" value="{{ value }}"/>
 

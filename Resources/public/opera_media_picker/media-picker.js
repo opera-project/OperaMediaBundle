@@ -1,4 +1,4 @@
-var selectMedia = function(FormVarsId) {
+var selectMedia = function (FormVarsId) {
     $("#mediaPickerModal" + FormVarsId).appendTo(document.body);
 
     $(document).on('click', '#mediaPickerModal' + FormVarsId + ' [data-select-media]', function (event) {
@@ -7,11 +7,19 @@ var selectMedia = function(FormVarsId) {
         $("#" + FormVarsId).val($(this).data('select-media'));
         $("#" + FormVarsId).parent().find('img').attr('src', $(this).data('select-media-preview'));
 
+        $("#mediaPickerRemove" + FormVarsId).show();
         $("#mediaPickerModal" + FormVarsId).modal('hide');
+    });
+
+    $("#mediaPickerRemove" + FormVarsId).on('click', function (event) {
+        event.preventDefault();
+        $("#" + FormVarsId).val(null);
+        $("#" + FormVarsId).parent().find('img').removeAttr('src');
+        $(this).hide();
     });
 }
 
-var ajaxMediaLink = function(FormVarsId, callback = null) {
+var ajaxMediaLink = function (FormVarsId, callback = null) {
     $(document).on('click', '#mediaPickerModal' + FormVarsId + ' [data-ajax-link]', function (event) {
         event.preventDefault();
 
@@ -28,7 +36,7 @@ var ajaxMediaLink = function(FormVarsId, callback = null) {
     });
 }
 
-var preventDefaultSubmit = function(FormVarsId, callback = null) {
+var preventDefaultSubmit = function (FormVarsId, callback = null) {
     $(document).on('submit', '#mediaPickerModal' + FormVarsId + ' .modal-body form', function (event) {
         event.preventDefault();
 
@@ -51,7 +59,7 @@ var preventDefaultSubmit = function(FormVarsId, callback = null) {
             options.data = formData;
             options.processData = false;
         }
-        
+
         $.ajax(options);
     });
 }
