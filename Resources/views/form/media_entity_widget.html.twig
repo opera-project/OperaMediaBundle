@@ -7,7 +7,7 @@
 
         <img {% if form.vars.current_image %}src="{{ form.vars.current_image.path | imagine_filter('opera_thumbnail') }}"{% endif %}  />
         
-        <input type="hidden" id="{{form.vars.id}}" name="{{form.vars.full_name}}">
+        <input type="hidden" id="{{form.vars.id}}" name="{{form.vars.full_name}}" value="{{ value }}"/>
 
         <!-- Modal -->
         <div class="modal fade" id="mediaPickerModal{{form.vars.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel{{form.vars.id}}">
