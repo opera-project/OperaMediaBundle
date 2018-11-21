@@ -37,7 +37,8 @@ class MediaRepository extends ServiceEntityRepository
                     ->setParameter('sourceName', $sourceName);
         
         if ($folder) {
-            $qb->andWhere('m.folder_id = :folderId')
+            $qb->innerJoin('m.folder', 'f')
+                ->andWhere('f.id = :folderId')
                 ->setParameter('folderId', $folder->getId());
         } else {
             $qb->andWhere('m.folder is NULL');
