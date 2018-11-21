@@ -132,5 +132,9 @@ class Source
     {
         return $this->filesystem->size($media->getPath());
     }
-
+    
+    public function mimeType(Media $media)
+    {
+        return $this->filesystem->mimeType($media->getPath());
+    }
 }
