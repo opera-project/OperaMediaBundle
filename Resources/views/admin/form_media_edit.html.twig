@@ -10,11 +10,11 @@
 {%- endblock %}
 
 {% block content_title %}
-    {% trans from 'OperaMedia' %}Create Media{% endtrans %}
+    {% trans from 'OperaMedia' %}Edit Media{% endtrans %}
 {% endblock %}
 
 {% block main %}
-    {{ form_start(form, { attr: { class: 'form-horizontal new-form', action: path(app.request.get('_route'), { source: app.request.get('source'), parentFolder: app.request.get('parentFolder') }) }}) }}
+    {{ form_start(form, { attr: { class: 'form-horizontal new-form' }}) }}
 
         {{ form_rest(form) }}
 

@@ -7,7 +7,6 @@ use Opera\MediaBundle\Repository\FolderRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Component\Routing\Annotation\Route;
 use Opera\MediaBundle\MediaManager\SourceManager;
-use Opera\MediaBundle\MediaManager\Source;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Opera\MediaBundle\Entity\Folder;
 use Opera\MediaBundle\Entity\Media;
@@ -36,17 +35,23 @@ class AdminController extends Controller
 
     /**
      * @Route("/media/media/form/{id}", defaults={ "id": null }, name="opera_admin_media_media_form")
-     * @Template
      */
     public function formMedia(FolderRepository $folderRepository, FormFactoryInterface $formFactory, SourceManager $sourceManager, Request $request, ?Media $media = null)
     {
+        $media != null ? $editForm = true : $editForm = false;
+
         $form = $this->createMediaForm($folderRepository, $formFactory, $request, $media);
         $result = $this->handleForm($sourceManager, $form, $request);
 
-        return $result ? $result : [
-            'media' => $media,
-            'form' => $form->createView(),
-        ];
+        if ($result) {
+            return $result;
+        }
+        return $this->render(
+            $editForm ? '@OperaMedia/admin/form_media_edit.html.twig' : '@OperaMedia/admin/form_media.html.twig', [
+                'media' => $media,
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     /**
