@@ -13,8 +13,6 @@ use Opera\MediaBundle\Repository\FolderRepository;
 use Opera\MediaBundle\Repository\MediaRepository;
 use Liip\ImagineBundle\Binary\Loader\StreamLoader;
 use Liip\ImagineBundle\Binary\Loader\ChainLoader;
-use Opera\MediaBundle\Listener\FolderListenerOld;
-use Opera\MediaBundle\MediaManager\SourceManager;
 
 class OperaMediaExtension extends Extension
 {

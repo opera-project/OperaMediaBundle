@@ -4,7 +4,6 @@ namespace Opera\MediaBundle\BlockType;
 
 use Opera\CoreBundle\BlockType\BaseBlock;
 use Opera\CoreBundle\BlockType\BlockTypeInterface;
-use Opera\CoreBundle\Form\Type\CkEditorOrTextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Opera\CoreBundle\Entity\Block;
 use Opera\MediaBundle\Form\MediaTextType;

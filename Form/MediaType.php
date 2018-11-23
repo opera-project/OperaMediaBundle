@@ -16,8 +16,7 @@ class MediaType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name')
-                ->add('slug');
+        $builder->add('name');
 
         if ($options['mode'] === 'new') {
             $builder->add('source', SourceType::class, array('disabled' => true))

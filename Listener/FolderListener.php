@@ -3,7 +3,6 @@
 namespace Opera\MediaBundle\Listener;
 
 use Opera\MediaBundle\Entity\Folder;
-use Doctrine\ORM\EntityManagerInterface;
 use Opera\MediaBundle\MediaManager\SourceManager;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;

@@ -38,7 +38,6 @@ class Folder
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Gedmo\Slug(fields={"name"})
-     * @Assert\NotBlank()
      */
     private $slug;
 
