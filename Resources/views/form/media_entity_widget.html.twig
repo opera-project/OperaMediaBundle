@@ -31,15 +31,15 @@
 
     <script>
 
-    $(document).ready(function() {
-        selectMedia('{{form.vars.id}}');
-        ajaxMediaLink('{{form.vars.id}}', () => {
-            $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
+        $(document).ready(function() {
+            selectMedia('{{form.vars.id}}');
+            ajaxMediaLink('{{form.vars.id}}', () => {
+                $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
+            });
+            preventDefaultSubmit('{{form.vars.id}}', () => {
+                $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
+            });
         });
-        preventDefaultSubmit('{{form.vars.id}}', () => {
-            $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
-        });
-    });
 
     </script>
 {% endblock %}
