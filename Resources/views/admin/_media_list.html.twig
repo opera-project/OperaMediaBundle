@@ -46,8 +46,8 @@
                 {% endfor %}
 
                 {% if pagerFantaMedia and pagerFantaMedia.haveToPaginate %}
-                    {{ pagerfanta(pagerFantaMedia, 'twitter_bootstrap4') }}
-                {% endif %} 
+                    {{ pagerfanta(pagerFantaMedia, 'twitter_bootstrap4', { routeName: 'opera_admin_media_list' }) }}
+                {% endif %}
             {% endif %}
 
         </div>
