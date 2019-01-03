@@ -30,7 +30,7 @@ class MediaRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
-    public function queryBuilderBySourceAndFolder($sourceName, Folder $folder = null)
+    public function queryBuilderBySourceAndFolder($sourceName, Folder $folder = null, ?string $querySearch = null)
     {
         $qb = $this->createQueryBuilder('m')
                     ->andWhere('m.source = :sourceName')
@@ -42,6 +42,11 @@ class MediaRepository extends ServiceEntityRepository
                 ->setParameter('folderId', $folder->getId());
         } else {
             $qb->andWhere('m.folder is NULL');
+        }
+
+        if ($querySearch) {
+            $qb->andWhere('m.name LIKE :querySearch')
+               ->setParameter('querySearch', '%'.$querySearch.'%');
         }
         
         return $qb->getQuery();

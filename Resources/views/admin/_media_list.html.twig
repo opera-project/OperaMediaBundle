@@ -15,22 +15,37 @@
 
         <div class="tab-content">
             <div class="well">
-                {% trans from 'OperaMedia' %}Current Folder: {% endtrans %}
-                {{ selected_folder ? selected_folder.name : 'root' }}<br />
+                <div class="row">
+                    <div class="col-sm-6">
+                        {% trans from 'OperaMedia' %}Current Folder: {% endtrans %}
+                        {{ selected_folder ? selected_folder.name : 'root' }}<br />
 
-                {% if selected_folder %}
-                    {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %}
-                    <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
-                        {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
-                    </a>
-                {% endif %}
+                        {% if selected_folder %}
+                            {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %}
+                            <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
+                                {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
+                            </a>
+                        {% endif %}
 
-                <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
-                    {% trans from 'OperaMedia' %}New Folder{% endtrans %}
-                </a>
-                <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
-                    {% trans from 'OperaMedia' %}New Media{% endtrans %}
-                </a>
+                        <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                            {% trans from 'OperaMedia' %}New Folder{% endtrans %}
+                        </a>
+                        <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                            {% trans from 'OperaMedia' %}New Media{% endtrans %}
+                        </a>
+                    </div>
+                    <div class="col-sm-6" id="search-media">
+                        <form action="#" method="post" class="sidebar-form">
+                            <div class="input-group">
+                            <input type="text" name="q" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                    <button type="submit" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
 
@@ -57,12 +72,24 @@
 <script>
     {% if mode == 'ajax' %}
     /**
-    * set pagination link ajax
-    */
+     * set pagination link ajax
+     */
         $(document).ready(function() {
             $('.pagination a').each(function(e) {
                 $(this).attr('data-ajax-link', '');
             })
         });
+
+    /**
+     * set search for modal ajax
+     */
+    $('#search-media form').on('submit', function (e) {
+        /**
+         * todo ajax not working
+         */
+        e.preventDefault();
+    });
     {% endif %}
+
+
 </script>

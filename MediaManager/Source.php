@@ -60,13 +60,13 @@ class Source
     /**
      * List all media of this source and folder using a pagination
      */
-    public function listMedias(?Folder $folder = null, ?int $page = 1)
+    public function listMedias(?Folder $folder = null, ?int $page = 1, ?string $querySearch = null)
     {
         if ($folder && $folder->getSource() != $this->getName()) {
             throw new \LogicException("Folder source ".$folder->getSource()." not from source ".$this->getName());
         }
 
-        $qb = $this->mediaRepository->queryBuilderBySourceAndFolder($this->name, $folder);
+        $qb = $this->mediaRepository->queryBuilderBySourceAndFolder($this->name, $folder, $querySearch);
 
         $adapter = new DoctrineORMAdapter($qb);
         $pagerfanta = new Pagerfanta($adapter);
