@@ -15,6 +15,7 @@ use Opera\MediaBundle\Form\MediaType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminController extends Controller
 {
@@ -52,6 +53,24 @@ class AdminController extends Controller
                 'form' => $form->createView(),
             ]
         );
+    }
+
+    /**
+     * @Route("/media/item/view/{media}", options={"expose"=true}, name="opera_admin_media_view_media")
+     */
+    public function viewMedia(Media $media, SourceManager $sourceManager)
+    {
+        $source = $sourceManager->getSource($media->getSource());
+        $content = $source->read($media);
+
+
+        $response = new Response();
+        $response->headers->set('Content-Type', $media->getMime());
+        $response->headers->set('Cache-Control', "max-age=10, public, s-maxage=86400");
+
+        $response->setContent($content);
+
+        return $response->send();
     }
 
     /**
