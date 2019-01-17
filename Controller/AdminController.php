@@ -82,7 +82,7 @@ class AdminController extends Controller
     {
         $sources = $sourceManager->getSources();
         $selectedSource = $source_name ? $sourceManager->getSource($source_name) : array_values($sources)[0];
-        $pagerFantaMedia = $selectedSource->listMedias($folder, $request->get('page', 1), $request->get('q', null));
+        $pagerFantaMedia = $selectedSource->listMedias($folder, $request->get('page', 1));
         $folders = ($request->get('page') == 1 || !$request->get('page')) ? $selectedSource->listFolders($folder) : [];
 
         return [
