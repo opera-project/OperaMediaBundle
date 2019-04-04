@@ -1,8 +1,7 @@
 <div class="row">
-    <div class="col-xs-12">
-
+    <div class="col-12">
         <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs" style="margin-bottom: 30px">
                 {% for source in sources %}
                     <li class="{% if source.name == selected_source.name %}active{% endif %}">
                         <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: source.name }) }}">
@@ -12,57 +11,118 @@
                 {% endfor %}
             </ul>
         </div>
-
         <div class="tab-content">
-            <div class="well">
+            <div class="card-header" style="margin-bottom: 15px">
                 {% trans from 'OperaMedia' %}Current Folder: {% endtrans %}
-                {{ selected_folder ? selected_folder.name : 'root' }}<br />
-
+                {{ selected_folder ? selected_folder.name : 'root' }}<br/>
                 {% if selected_folder %}
                     {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %}
-                    <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
+                    <a data-ajax-link
+                       href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
                         {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
                     </a>
                 {% endif %}
-
-                <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                <a data-ajax-link class="btn btn-primary action-new"
+                   href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
                     {% trans from 'OperaMedia' %}New Folder{% endtrans %}
                 </a>
-                <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                <a data-ajax-link class="btn btn-primary action-new"
+                   href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
                     {% trans from 'OperaMedia' %}New Media{% endtrans %}
                 </a>
             </div>
-
-
             {% if folders is defined %}
                 {% for folder in folders %}
-                {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': folder } %}
+                    {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': folder } %}
                 {% endfor %}
             {% endif %}
-
             {% if pagerFantaMedia is defined %}
                 {% for media in pagerFantaMedia %}
                     {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': media } %}
                 {% endfor %}
-
                 {% if pagerFantaMedia and pagerFantaMedia.haveToPaginate %}
                     {{ pagerfanta(pagerFantaMedia, 'twitter_bootstrap4', { routeName: 'opera_admin_media_list' }) }}
                 {% endif %}
             {% endif %}
-
         </div>
     </div>
 </div>
+<style>
+    .nav-tabs > li {
+        float: left;
+        margin-bottom: -1px;
+    }
 
+    .nav-tabs-custom > .nav-tabs > li.active {
+        border-top-color: #3c8dbc;
+        border-right: 1px solid #E3E7ED;
+        border-left: 1px solid #E3E7ED;
+        padding-left: 0px;
+        padding-right: 0px;
+        margin-bottom: -7px;
+        background-color: #fff;
+    }
+
+    .nav-tabs-custom > .nav-tabs > li {
+        border-top: 3px solid transparent;
+        border-top-color: transparent;
+        border-top-style: solid;
+        border-top-width: 3px;
+        margin-bottom: -2px;
+        margin-right: 5px;
+    }
+
+    .nav-tabs-custom > .nav-tabs {
+        margin: 0;
+        border-bottom-color: #f4f4f4;
+        border-top-right-radius: 3px;
+        border-top-left-radius: 3px;
+        padding-top: 0;
+        padding-bottom: 5px;
+    }
+
+    .nav-tabs {
+        border-bottom: 1px solid #ddd;
+        border-bottom-color: rgb(221, 221, 221);
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+    }
+
+    .nav-tabs-custom {
+        margin-bottom: 20px;
+        background: #fff;
+        background-color: rgb(255, 255, 255);
+        background-position-x: 0%;
+        background-position-y: 0%;
+        background-repeat: repeat;
+        background-attachment: scroll;
+        background-image: none;
+        background-size: auto;
+        background-origin: padding-box;
+        background-clip: border-box;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+    }
+
+    .nav {
+        padding-left: 0px;
+        margin-bottom: 0;
+        list-style: none;
+        list-style-position: outside;
+        list-style-image: none;
+        list-style-type: none;
+    }
+
+</style>
 <script>
     {% if mode == 'ajax' %}
     /**
-    * set pagination link ajax
-    */
-        $(document).ready(function() {
-            $('.pagination a').each(function(e) {
-                $(this).attr('data-ajax-link', '');
-            })
-        });
+     * set pagination link ajax
+     */
+    $(document).ready(function () {
+        $('.pagination a').each(function (e) {
+            $(this).attr('data-ajax-link', '');
+        })
+    });
     {% endif %}
 </script>

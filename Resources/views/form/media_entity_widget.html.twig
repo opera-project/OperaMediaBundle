@@ -1,27 +1,32 @@
 {% block media_entity_widget %}
     <div class="media_entity_widget">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mediaPickerModal{{form.vars.id}}">
+        <button type="button" class="btn btn-primary" data-toggle="modal"
+                data-target="#mediaPickerModal{{ form.vars.id }}">
             {% trans from 'OperaMedia' %}Choose Media{% endtrans %}
         </button>
 
-        <img {% if form.vars.current_image %}src="{{ form.vars.current_image.path | imagine_filter('opera_thumbnail') }}"{% endif %}  />
-        <a class="btn btn-danger remove-link" id="mediaPickerRemove{{form.vars.id}}" {% if not form.vars.current_image %}style="display:none;"{% endif %}>{% trans from 'OperaMedia' %}Remove{% endtrans %}</a>
+        <img {% if form.vars.current_image %}src="{{ form.vars.current_image.path | imagine_filter('opera_thumbnail') }}"{% endif %} />
+        <a class="btn btn-danger remove-link" id="mediaPickerRemove{{ form.vars.id }}" href="#"
+           {% if not form.vars.current_image %}style="display:none;"{% endif %}>{% trans from 'OperaMedia' %}Remove{% endtrans %}</a>
 
-        
-        <input type="hidden" id="{{form.vars.id}}" name="{{form.vars.full_name}}" value="{{ value }}"/>
+
+        <input type="hidden" id="{{ form.vars.id }}" name="{{ form.vars.full_name }}" value="{{ value }}"/>
 
         <!-- Modal -->
-        <div class="modal fade" id="mediaPickerModal{{form.vars.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel{{form.vars.id}}">
+        <div class="modal fade" id="mediaPickerModal{{ form.vars.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel{{ form.vars.id }}">
             <div class="modal-dialog" role="document">
-                <div class="modal-content modal-lg">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel{{form.vars.id}}">{% trans from 'OperaMedia' %}Choose Media{% endtrans %}</h4>
-                </div>
-                <div class="modal-body">
-                    {% include "@OperaMedia/admin/_media_list.html.twig" with { 'mode': 'ajax', 'with_formats': false } %}
-                </div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"
+                            id="myModalLabel{{ form.vars.id }}">{% trans from 'OperaMedia' %}Choose Media{% endtrans %}</h4>
+                    </div>
+                    <div class="modal-body">
+                        {% include "@OperaMedia/admin/_media_list.html.twig" with { 'mode': 'ajax', 'with_formats': false } %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -31,15 +36,24 @@
 
     <script>
 
-        $(document).ready(function() {
-            selectMedia('{{form.vars.id}}');
-            ajaxMediaLink('{{form.vars.id}}', () => {
-                $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
+        $(document).ready(function () {
+            selectMedia('{{ form.vars.id }}');
+            ajaxMediaLink('{{ form.vars.id }}', () => {
+                $('#mediaPickerModal{{ form.vars.id }} .select-media-drop-down').remove();
             });
-            preventDefaultSubmit('{{form.vars.id}}', () => {
-                $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
+            preventDefaultSubmit('{{ form.vars.id }}', () => {
+                $('#mediaPickerModal{{ form.vars.id }} .select-media-drop-down').remove();
             });
         });
 
     </script>
+    <style>
+        .modal-header {
+            display: block;
+        }
+
+        .modal-dialog {
+            max-width: 1000px;
+        }
+    </style>
 {% endblock %}
