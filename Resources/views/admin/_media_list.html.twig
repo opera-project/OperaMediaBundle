@@ -98,8 +98,15 @@
                         {% endfor %}
 
                         {% if pagerFantaMedia and pagerFantaMedia.haveToPaginate %}
-                            {{ pagerfanta(pagerFantaMedia, 'twitter_bootstrap4', { routeName: 'opera_admin_media_list' }) }}
+                        {{ pagerfanta(pagerFantaMedia, 'twitter_bootstrap4', {
+                                routeName: 'opera_admin_media_list',
+                                routeParams: app.request.query.all() | merge({
+                                    'source_name': selected_source ? selected_source.name : null,
+                                    'folder': selected_folder ? selected_folder.id.__toString : null
+                                })
+                        }) }}
                         {% endif %}
+                        
                     {% endif %}
                     </div>
                 </div>

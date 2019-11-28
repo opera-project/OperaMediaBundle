@@ -59,10 +59,19 @@ class AdminController extends Controller
      * @Entity("folder", expr="folder_id ? repository.findOneBySourceAndId(source_name, folder_id) : null")
      * @Template
      */
-    public function view(?string $source_name = null, ?Folder $folder = null, SourceManager $sourceManager, Request $request)
+    public function view(
+        FolderRepository $folderRepository,
+        ?string $source_name = null,
+        ?Folder $folder = null,
+        SourceManager $sourceManager,
+        Request $request
+        )
     {
         $sources = $sourceManager->getSources();
         $selectedSource = $source_name ? $sourceManager->getSource($source_name) : array_values($sources)[0];
+        if (!$folder && $request->query->get('folder')) {
+            $folder = $folderRepository->findOneBy(["id" => $request->query->get('folder')]);
+        }
         $pagerFantaMedia = $selectedSource->listMedias($folder, $request->get('page', 1));
         $folders = ($request->get('page') == 1 || !$request->get('page')) ? $selectedSource->listFolders($folder) : [];
 
