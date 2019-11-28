@@ -26,7 +26,7 @@ class AdminController extends Controller
     {
         $form = $this->createFolderForm($folderRepository, $formFactory, $request, $folder);
         $result = $this->handleForm($sourceManager, $form, $request);
-
+        
         return $result ? $result : [
             'folder' => $folder,
             'form' => $form->createView(),
@@ -42,7 +42,7 @@ class AdminController extends Controller
 
         $form = $this->createMediaForm($folderRepository, $formFactory, $request, $media);
         $result = $this->handleForm($sourceManager, $form, $request);
-
+        
         if ($result) {
             return $result;
         }
@@ -66,6 +66,16 @@ class AdminController extends Controller
         $pagerFantaMedia = $selectedSource->listMedias($folder, $request->get('page', 1));
         $folders = ($request->get('page') == 1 || !$request->get('page')) ? $selectedSource->listFolders($folder) : [];
 
+        $breadCrumb = [];
+        if ($folder) {
+            $selectedFolder = $folder;
+            $breadCrumb[] = $selectedFolder;
+            while ($selectedFolder->getParent()) {
+                $breadCrumb[] = $selectedFolder->getParent();
+                $selectedFolder = $selectedFolder->getParent();
+            }
+        }
+
         return [
             'sources' => $sources,
             'mode' => $request->isXmlHttpRequest() ? 'ajax' : ($request->get('mode') ? $request->get('mode') : 'html'),
@@ -74,6 +84,7 @@ class AdminController extends Controller
             'pagerFantaMedia' => $pagerFantaMedia,
             'folders' => $folders,
             'filter_sets' => $this->container->getParameter('liip_imagine.filter_sets'),
+            'breadcrumb' => array_reverse($breadCrumb)
         ];
     }
 

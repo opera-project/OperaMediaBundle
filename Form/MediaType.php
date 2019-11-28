@@ -42,6 +42,8 @@ class MediaType extends AbstractType
             'data_class' => Media::class,
             'mode' => 'new', // 'new' or 'edit'
             'source' => null,
+            'csrf_protection' => false,
+            'allow_extra_fields' => true
         ]);
 
     }

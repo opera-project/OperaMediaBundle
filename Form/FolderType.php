@@ -35,6 +35,8 @@ class FolderType extends AbstractType
             'mode' => 'new', // 'new' or 'edit'
             'source' => null,
             'folder' => null,
+            'csrf_protection' => false,
+            'allow_extra_fields' => true
         ]);
     }
 

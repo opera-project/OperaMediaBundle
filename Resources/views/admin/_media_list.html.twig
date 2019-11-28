@@ -1,58 +1,114 @@
-<div class="row">
-    <div class="col-xs-12">
-
-        <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
+        <!-- Dans le section id="main" class="content-body" -->
+        <div class="modal-body">
+            <ul class="list-group">
+            {# Choix de la source: #}
                 {% for source in sources %}
-                    <li class="{% if source.name == selected_source.name %}active{% endif %}">
+                    <li class="list-group-item {% if source.name == selected_source.name %}active{% endif %}">
                         <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: source.name }) }}">
-                            <strong>{{ source.name }}</strong>
+                            <strong>{{ source.name }}</strong><br/>
                         </a>
                     </li>
                 {% endfor %}
             </ul>
         </div>
 
-        <div class="tab-content">
-            <div class="well">
-                {% trans from 'OperaMedia' %}Current Folder: {% endtrans %}
-                {{ selected_folder ? selected_folder.name : 'root' }}<br />
+        <div></div>
 
-                {% if selected_folder %}
-                    {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %}
-                    <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
-                        {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
-                    </a>
-                {% endif %}
-
-                <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
-                    {% trans from 'OperaMedia' %}New Folder{% endtrans %}
-                </a>
-                <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
-                    {% trans from 'OperaMedia' %}New Media{% endtrans %}
-                </a>
-            </div>
-
-
-            {% if folders is defined %}
-                {% for folder in folders %}
-                {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': folder } %}
-                {% endfor %}
-            {% endif %}
-
-            {% if pagerFantaMedia is defined %}
-                {% for media in pagerFantaMedia %}
-                    {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': media } %}
-                {% endfor %}
-
-                {% if pagerFantaMedia and pagerFantaMedia.haveToPaginate %}
-                    {{ pagerfanta(pagerFantaMedia, 'twitter_bootstrap4', { routeName: 'opera_admin_media_list' }) }}
-                {% endif %}
-            {% endif %}
-
+<form name="article" method="post" id="new-article-form" class="new-form" data-view="new" data-entity="Article" data-entity-id="">
+    <div class="row">
+        <div class="field-group col-7">
+            <fieldset>
+                <legend class="with-icon">
+                    <i class="fa fa-fw fa-folder"></i> Informations
+                </legend>
+                <div class="row">
+                    <div class="col-12 ">
+                    {% trans from 'OperaMedia' %}Current Folder: {% endtrans %} <u>{{ selected_folder ? selected_folder.name : 'root' }}</u>
+                <br/>
+                    {% if selected_folder %}
+                        {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %}
+                        <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
+                            {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
+                        </a>
+                    {% else %}
+                        {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %} none
+                    {% endif %}
+                    <br><br>
+                    {% if breadcrumb is defined %}
+                        <ol class="breadcrumb">
+                            <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: null }) }}">
+                            Root
+                            </a> /
+                            {% for breadcrumb_folder in breadcrumb %}
+                                {% if loop.last %}
+                                    <li>
+                                        <a class="active" data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: breadcrumb_folder.id }) }}">
+                                            {{ breadcrumb_folder.name }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: breadcrumb_folder.id }) }}">
+                                            {{ breadcrumb_folder.name }}
+                                        </a>
+                                    </li> /
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                    {% endif %}
+                    </div>
+                </div>
+            </fieldset>
         </div>
+        <div class="field-group col-5">
+            <fieldset>
+                <legend class="with-icon">
+                    <i class="fa fa-fw fa-plus"></i> Actions
+                </legend>
+
+                <div class="row">
+                    <div class="col-12">
+                        <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                            {% trans from 'OperaMedia' %}New Folder{% endtrans %}
+                        </a>
+                        <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
+                            {% trans from 'OperaMedia' %}New Media{% endtrans %}
+                        </a>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="field-group col-12">
+            <fieldset>
+                <legend class="with-icon">
+                    <i class="fa fa-fw fa-folder"></i><i class="fa fa-fw fa-file"></i> Contenu
+                </legend>
+
+                <div class="row">
+                    <div class="col-12">
+                    {% if folders is defined %}
+                        {% for folder in folders %}
+                        {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': folder } %}
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if pagerFantaMedia is defined %}
+                        {% for media in pagerFantaMedia %}
+                            {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': media } %}
+                        {% endfor %}
+
+                        {% if pagerFantaMedia and pagerFantaMedia.haveToPaginate %}
+                            {{ pagerfanta(pagerFantaMedia, 'twitter_bootstrap4', { routeName: 'opera_admin_media_list' }) }}
+                        {% endif %}
+                    {% endif %}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
     </div>
-</div>
+</form>
+
 
 <script>
     {% if mode == 'ajax' %}
@@ -66,3 +122,9 @@
         });
     {% endif %}
 </script>
+
+<style>
+.list-group-item.active a {
+    color: #ffffff
+}
+</style>

@@ -1,35 +1,44 @@
 <div class="panel {% if item.type == 'folder' %}panel-info{% else %}panel-default{% endif %}">
     <div class="panel-heading">
     {% if item.type == 'folder' %}
+    <div class="file-preview">
+    <i class="fa fa-folder"></i>
         <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: item.id }) }}">
-            <strong>{{ item.name }}</strong>
+            <strong>{{ item.name }}</strong> <span class="badge">{{ item.childs|length + item.medias|length }}</span>
         </a>
-        <span class="badge">{{ item.childs|length + item.medias|length }}</span>
+    </div>
     {% else %}
-        <strong>{{ item.name }}</strong>
+        {% if item.mime starts with 'image/' %}
+            <div class="file-preview" data-type="{{item.mime}}">
+                <img src="{{ item.path | imagine_filter('opera_thumbnail') }}" />
+            </div>
+            <strong>{{ item.name }}</strong>
+            <i class="fa fa-image"></i>
+        {% else %}
+            <strong>{{ item.name }}</strong>
+            {% if item.mime starts with 'image/' %}
+                
+            {% elseif item.mime starts with 'audio/' %}
+                <i class="fa fa-file-audio-o"></i>
+            {% elseif item.mime starts with 'video/' %}
+                <i class="fa fa-file-video-o"></i>
+            {% elseif item.mime == "application/pdf" %}
+                <i class="fa fa-file-pdf-o"></i>
+            {% elseif item.mime == "text/plain" %}
+                <i class="fa fa-file-text"></i>
+            {% elseif item.mime == "application/zip" %}
+                <i class="fa fa-file-archive-o "></i>
+            {% else %}
+                {{item.mime}}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    {% if item.type == 'media' and not item.mime starts with 'image/' %}
+        <div class="file-preview"></div>
     {% endif %}
     </div>
-    <div class="panel-body">
-        {% if item.type == 'media' %}
-            <div class="file-preview" data-type="{{item.mime}}">
-                {% if item.mime starts with 'image/' %}
-                    <img src="{{ item.path | imagine_filter('opera_thumbnail') }}" />
-                {% elseif item.mime starts with 'audio/' %}
-                    <i class="fa fa-file-audio-o"></i>
-                {% elseif item.mime starts with 'video/' %}
-                    <i class="fa fa-file-video-o"></i>
-                {% elseif item.mime == "application/pdf" %}
-                    <i class="fa fa-file-pdf-o"></i>
-                {% elseif item.mime == "text/plain" %}
-                    <i class="fa fa-file-text"></i>
-                {% elseif item.mime == "application/zip" %}
-                    <i class="fa fa-file-archive-o "></i>
-                {% else %}
-                    {{item.mime}}
-                {% endif %}
-            </div>
-        {% endif %}
 
+    <div class="panel-body">
 
         <div class="btn-group" role="group" aria-label="...">
             {% if mode != 'ajax' %}
@@ -89,6 +98,10 @@
     .file-preview {
         min-height: 100px;
         text-align: center;
+    }
+    .badge {
+        background-color: #337ab7;
+        color: white;
     }
 </style>
 
