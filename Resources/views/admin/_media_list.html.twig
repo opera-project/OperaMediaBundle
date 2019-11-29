@@ -1,20 +1,17 @@
-        <!-- Dans le section id="main" class="content-body" -->
-        <div class="modal-body">
-            <ul class="list-group">
-            {# Choix de la source: #}
-                {% for source in sources %}
-                    <li class="list-group-item {% if source.name == selected_source.name %}active{% endif %}">
-                        <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: source.name }) }}">
-                            <strong>{{ source.name }}</strong><br/>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+<!-- Dans le section id="main" class="content-body" -->
+<div class="modal-body">
+    <ul class="list-group">
+        {% for source in sources %}
+            <li class="list-group-item {% if source.name == selected_source.name %}active{% endif %}">
+                <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: source.name }) }}">
+                    <strong>{{ source.name }}</strong><br/>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
 
-        <div></div>
-
-<form name="article" method="post" id="new-article-form" class="new-form" data-view="new" data-entity="Article" data-entity-id="">
+<div class="mediateque">
     <div class="row">
         <div class="field-group col-7">
             <fieldset>
@@ -114,18 +111,18 @@
         </div>
 
     </div>
-</form>
+</div>
 
+<script src="{{ asset('bundles/operamedia/opera_media_picker/media-picker.js') }}"></script>
 
 <script>
     {% if mode == 'ajax' %}
+
     /**
     * set pagination link ajax
     */
         $(document).ready(function() {
-            $('.pagination a').each(function(e) {
-                $(this).attr('data-ajax-link', '');
-            })
+            addDataAjaxLinkToPagination();
         });
     {% endif %}
 </script>
@@ -133,5 +130,9 @@
 <style>
 .list-group-item.active a {
     color: #ffffff
+}
+.mediateque {
+    background: #f8fafc;
+    padding: 18px 20px;
 }
 </style>
