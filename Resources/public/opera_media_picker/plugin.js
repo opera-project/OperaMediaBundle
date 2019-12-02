@@ -35,13 +35,13 @@ CKEDITOR.plugins.add( 'opera_media_picker', {
 		CKEDITOR.scriptLoader.load( this.path + '/media-picker.js' );
 
 		var html = '<div class="modal fade" id="mediaPickerModal' + editor.id + '" tabindex="-1" role="dialog" aria-labelledby="mediaPickerModal">';
-		html +=     	'<div class="modal-dialog" role="document">'
+		html +=     	'<div class="modal-dialog modal-lg" role="document">'
 		html +=     		'<div class="modal-content modal-lg">'
 		html +=     			'<div class="modal-header">'
+		html +=     				'<h4 class="modal-title" id="mediaPickerModal">Choose Media</h4>'
 		html +=     				'<button type="button" class="close" data-dismiss="modal" aria-label="Close">'
 		html +=     					'<span aria-hidden="true">&times;</span>'
 		html +=     				'</button>'
-		html +=     				'<h4 class="modal-title" id="mediaPickerModal">Choose Media</h4>'
 		html +=     			'</div>'
 		html +=     			'<div class="modal-body">'
 		html +=     			'</div>'

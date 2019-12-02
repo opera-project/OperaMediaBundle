@@ -26,7 +26,7 @@ class AdminController extends Controller
     {
         $form = $this->createFolderForm($folderRepository, $formFactory, $request, $folder);
         $result = $this->handleForm($sourceManager, $form, $request);
-
+        
         return $result ? $result : [
             'folder' => $folder,
             'form' => $form->createView(),
@@ -42,7 +42,7 @@ class AdminController extends Controller
 
         $form = $this->createMediaForm($folderRepository, $formFactory, $request, $media);
         $result = $this->handleForm($sourceManager, $form, $request);
-
+        
         if ($result) {
             return $result;
         }
@@ -59,12 +59,31 @@ class AdminController extends Controller
      * @Entity("folder", expr="folder_id ? repository.findOneBySourceAndId(source_name, folder_id) : null")
      * @Template
      */
-    public function view(?string $source_name = null, ?Folder $folder = null, SourceManager $sourceManager, Request $request)
+    public function view(
+        FolderRepository $folderRepository,
+        ?string $source_name = null,
+        ?Folder $folder = null,
+        SourceManager $sourceManager,
+        Request $request
+        )
     {
         $sources = $sourceManager->getSources();
         $selectedSource = $source_name ? $sourceManager->getSource($source_name) : array_values($sources)[0];
+        if (!$folder && $request->query->get('folder')) {
+            $folder = $folderRepository->findOneBy(["id" => $request->query->get('folder')]);
+        }
         $pagerFantaMedia = $selectedSource->listMedias($folder, $request->get('page', 1));
         $folders = ($request->get('page') == 1 || !$request->get('page')) ? $selectedSource->listFolders($folder) : [];
+
+        $breadCrumb = [];
+        if ($folder) {
+            $selectedFolder = $folder;
+            $breadCrumb[] = $selectedFolder;
+            while ($selectedFolder->getParent()) {
+                $breadCrumb[] = $selectedFolder->getParent();
+                $selectedFolder = $selectedFolder->getParent();
+            }
+        }
 
         return [
             'sources' => $sources,
@@ -74,6 +93,7 @@ class AdminController extends Controller
             'pagerFantaMedia' => $pagerFantaMedia,
             'folders' => $folders,
             'filter_sets' => $this->container->getParameter('liip_imagine.filter_sets'),
+            'breadcrumb' => array_reverse($breadCrumb)
         ];
     }
 
