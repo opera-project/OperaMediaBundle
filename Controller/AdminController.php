@@ -12,19 +12,28 @@ use Opera\MediaBundle\Entity\Folder;
 use Opera\MediaBundle\Entity\Media;
 use Opera\MediaBundle\Form\FolderType;
 use Opera\MediaBundle\Form\MediaType;
+use Opera\MediaBundle\Form\SearchType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
+use Opera\MediaBundle\SearchManager\SearchManager;
 
 class AdminController extends Controller
 {
+    private $formFactory;
+
+    public function __construct(FormFactoryInterface $formFactory)
+    {
+        $this->formFactory = $formFactory;
+    }
+
     /**
      * @Route("/media/folder/form/{id}", defaults={ "id": null }, name="opera_admin_media_folder_form")
      * @Template
      */
-    public function formFolder(FolderRepository $folderRepository, FormFactoryInterface $formFactory, SourceManager $sourceManager, Request $request, Folder $folder = null)
+    public function formFolder(FolderRepository $folderRepository, SourceManager $sourceManager, Request $request, Folder $folder = null)
     {
-        $form = $this->createFolderForm($folderRepository, $formFactory, $request, $folder);
+        $form = $this->createFolderForm($folderRepository, $request, $folder);
         $result = $this->handleForm($sourceManager, $form, $request);
         
         return $result ? $result : [
@@ -36,11 +45,11 @@ class AdminController extends Controller
     /**
      * @Route("/media/media/form/{id}", defaults={ "id": null }, name="opera_admin_media_media_form")
      */
-    public function formMedia(FolderRepository $folderRepository, FormFactoryInterface $formFactory, SourceManager $sourceManager, Request $request, ?Media $media = null)
+    public function formMedia(FolderRepository $folderRepository, SourceManager $sourceManager, Request $request, ?Media $media = null)
     {
         $media != null ? $editForm = true : $editForm = false;
 
-        $form = $this->createMediaForm($folderRepository, $formFactory, $request, $media);
+        $form = $this->createMediaForm($folderRepository, $request, $media);
         $result = $this->handleForm($sourceManager, $form, $request);
         
         if ($result) {
@@ -64,9 +73,9 @@ class AdminController extends Controller
         ?string $source_name = null,
         ?Folder $folder = null,
         SourceManager $sourceManager,
-        Request $request
-        )
-    {
+        Request $request,
+        SearchManager $searchManager
+    ) {
         $sources = $sourceManager->getSources();
         $selectedSource = $source_name ? $sourceManager->getSource($source_name) : array_values($sources)[0];
         if (!$folder && $request->query->get('folder')) {
@@ -75,14 +84,19 @@ class AdminController extends Controller
         $pagerFantaMedia = $selectedSource->listMedias($folder, $request->get('page', 1));
         $folders = ($request->get('page') == 1 || !$request->get('page')) ? $selectedSource->listFolders($folder) : [];
 
-        $breadCrumb = [];
         if ($folder) {
-            $selectedFolder = $folder;
-            $breadCrumb[] = $selectedFolder;
-            while ($selectedFolder->getParent()) {
-                $breadCrumb[] = $selectedFolder->getParent();
-                $selectedFolder = $selectedFolder->getParent();
-            }
+            $breadCrumb = $folder->getBreadcrumbArray();
+        }
+
+        /**
+         * SEARCH
+         */
+        $searchResult = null;
+        $searchForm = $this->formFactory->create(SearchType::class);
+        $searchForm->handleRequest($request);
+        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+            $search = $searchForm->getData();
+            $searchResult = $searchManager->search($search, $selectedSource, $folder);
         }
 
         return [
@@ -93,7 +107,9 @@ class AdminController extends Controller
             'pagerFantaMedia' => $pagerFantaMedia,
             'folders' => $folders,
             'filter_sets' => $this->container->getParameter('liip_imagine.filter_sets'),
-            'breadcrumb' => array_reverse($breadCrumb)
+            'breadcrumb' => $breadCrumb,
+            'searchForm' => $searchForm->createView(),
+            'searchResult' => $searchResult
         ];
     }
 
@@ -165,7 +181,7 @@ class AdminController extends Controller
         return null;
     }
 
-    private function createFolderForm(FolderRepository $folderRepository, FormFactoryInterface $formFactory, Request $request, ?Folder $folder)
+    private function createFolderForm(FolderRepository $folderRepository, Request $request, ?Folder $folder)
     {
         if (!$folder) {
             $folder = new Folder();
@@ -175,27 +191,27 @@ class AdminController extends Controller
             }
             $folder->setParent($request->get('parentFolder') ? $folderRepository->findOneBySourceAndId($request->get('source'), $request->get('parentFolder')) : null);
 
-            return $formFactory->create(FolderType::class, $folder);
+            return $this->formFactory->create(FolderType::class, $folder);
         }
         
-        return $formFactory->create(FolderType::class, $folder, [
+        return $this->formFactory->create(FolderType::class, $folder, [
             'mode' => 'edit',
             'source' => $folder->getSource(),
             'folder' => $folder,
         ]);
     }
 
-    private function createMediaForm(FolderRepository $folderRepository, FormFactoryInterface $formFactory, Request $request, ?Media $media)
+    private function createMediaForm(FolderRepository $folderRepository, Request $request, ?Media $media)
     {
         if (!$media) {
             $media = new Media();
             $media->setSource($request->get('source'));
             $media->setFolder($request->get('parentFolder') ? $folderRepository->findOneBySourceAndId($request->get('source'), $request->get('parentFolder')) : null);
             
-            return $formFactory->create(MediaType::class, $media);
+            return $this->formFactory->create(MediaType::class, $media);
         }
 
-        return $form = $formFactory->create(MediaType::class, $media, [
+        return $form = $this->formFactory->create(MediaType::class, $media, [
             'mode' => 'edit',
             'source' => $media->getSource(),
         ]);

@@ -55,6 +55,7 @@
 
                 <div class="row">
                     <div class="col-12">
+                    {# {{selected_folder.path}} #}
                         {% if breadcrumb is defined and breadcrumb|length %}
                             <ol class="breadcrumb">
                                 <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: null }) }}">
@@ -102,6 +103,116 @@
                 </div>
             </fieldset>
         </div>
+
+        {% if searchForm %}
+        <div class="field-group col-12">
+            <fieldset>
+                <legend class="with-icon">
+                    <i class="fa fa-fw fa-search"></i> Recherche
+                </legend>
+                {{ form_start(searchForm, { attr: { class: 'form-horizontal', action: path('opera_admin_media_list', { source_name: selected_source.name, folder: selected_folder ? selected_folder.id.tostring : null }) }}) }}
+                    <div class="row">
+                        <div class="col-3">{{ form_row(searchForm.what) }}</div>
+                        <div class="col-3">{{ form_row(searchForm.where) }}</div>
+                        <div class="col-3">{{ form_row(searchForm.search) }}</div>
+                        <div class="col-3 col-search">
+                            <button type="submit" class="btn btn-primary action-search">
+                                <i class="fa fa-search"></i> {% trans from 'OperaMedia' %}Search{% endtrans %}
+                            </button>
+                        </div>
+                    </div>
+                {{ form_end(searchForm) }}
+                <table class="table datagrid">
+                    <thead>
+                        <tr>
+                            <th><a>Type</a></th>
+                            <th><a>Path</a></th>
+                            <th><a>Name</a></th>
+                            <th><a>created At</a></th>
+                            <th><a>updated At</a></th>
+                            <th><a>Actions</a></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in searchResult %}
+                        <tr data-id="ea11d4ce-9f1a-4019-a07a-c29f80c6997e">
+                            <td>{{ item.type }}</td>
+                            <td>{{ item.folderPath }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.createdAt|date("Y/m/d H:i:s") }}</td>
+                            <td>{{ item.updatedAt|date("Y/m/d H:i:s") }}</td>
+
+                            <td class="actions">
+                            {% if item.type == 'folder' %}
+                            <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: item.id }) }}">
+                                Go to folder <strong>{{ item.name }}</strong>
+                            </a>
+
+
+                            <a data-ajax-link class="btn btn-default" href="{% if item.type == 'folder' %}
+                                {{ path('opera_admin_media_folder_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
+                                {% else %}
+                                {{ path('opera_admin_media_media_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
+                                {% endif %}">
+                                    Edit
+                            </a>
+                            {% else %}
+
+
+            {# todo clean ici trop gros for #}
+
+            {% if mode != 'ajax' %}
+                <a data-ajax-link class="btn btn-default" href="{% if item.type == 'folder' %}
+                                {{ path('opera_admin_media_folder_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
+                                {% else %}
+                                {{ path('opera_admin_media_media_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}
+                                {% endif %}
+                    ">
+                        Edit
+                </a>
+            {% else %}
+                <a class="btn btn-success select-media-button" data-select-media="{{item.id}}" data-select-media-preview="{{ item.path | imagine_filter('opera_thumbnail') }}">
+                    Select
+                </a>
+                {% if with_formats is not defined or with_formats %}
+                    <div class="dropdown pull-left select-media-drop-down">
+                        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton{{ item.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Select
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ item.id }}">
+                            {% if filter_sets is defined %}
+                                {% for filter_set in filter_sets|keys %}
+                                    <li><a class="dropdown-item" data-select-media="{{item.id}}" data-select-media-preview="{{ path('liip_imagine_filter', { path: item.path, filter: filter_set }) }}">{{ filter_set }}</a></li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+
+
+
+                                {# <a name="select media" class="text-danger action-select-media"> select</a> #}
+                            {% endif %}
+                                {# <a name="change folder" class="action-change-folder" href="#"><i class="fa fa-arrow-right"></i> go</a> #}
+                                {# <a name="select media" class="text-danger action-select-media"> select</a> #}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% if not searchResult %}
+                        <tr>
+                            <td class="no-results" colspan="7">
+                                No results
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+        </fieldset>
+        </div>
+        {% endif %}
         
         <div class="field-group col-12">
             <fieldset>
@@ -141,7 +252,7 @@
     </div>
 </div>
 
-<script src="{{ asset('bundles/operamedia/opera_media_picker/media-picker.js') }}"></script>
+{# <script src="{{ asset('bundles/operamedia/opera_media_picker/media-picker.js') }}"></script> #}
 
 <script>
     {% if mode == 'ajax' %}
@@ -150,7 +261,10 @@
     * set pagination link ajax
     */
         $(document).ready(function() {
-            addDataAjaxLinkToPagination();
+            // addDataAjaxLinkToPagination
+            $('.pagination a').each(function(e) {
+                $(this).attr('data-ajax-link', '');
+            })
         });
     {% endif %}
 </script>
@@ -166,5 +280,14 @@
 .source-group-item {
     padding-top: 0.3rem;
     padding-bottom: 0.3rem;
+}
+
+.col-search {
+    text-align: center;
+    line-height: 96px;
+}
+
+.col-search .action-search {
+    vertical-align: middle;
 }
 </style>

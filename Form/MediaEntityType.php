@@ -12,6 +12,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Opera\CoreBundle\Form\DataTransformer\IdToModelTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormFactoryInterface;
+use Opera\MediaBundle\Form\SearchType;
 
 class MediaEntityType extends AbstractType
 {
@@ -19,10 +21,16 @@ class MediaEntityType extends AbstractType
 
     private $registry;
 
-    public function __construct(SourceManager $sourceManager, RegistryInterface $registry)
-    {
+    private $formFactory;
+
+    public function __construct(
+        SourceManager $sourceManager,
+        RegistryInterface $registry,
+        FormFactoryInterface $formFactory
+    ) {
         $this->sourceManager = $sourceManager;
         $this->registry = $registry;
+        $this->formFactory = $formFactory;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -62,6 +70,8 @@ class MediaEntityType extends AbstractType
         $view->vars['selected_folder'] = $options['selected_folder'];
         $view->vars['pagerFantaMedia'] = $options['pagerFantaMedia'];
         $view->vars['folders'] = $options['folders'];
+        $view->vars['searchForm'] = $this->formFactory->create(SearchType::class)->createView();
+        $view->vars['searchResult'] = null;
 
         $view->vars['current_image'] = $form->getData() ? $this->registry->getRepository(Media::class)->find($form->getData()) : null;
     }

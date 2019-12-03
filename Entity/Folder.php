@@ -205,4 +205,29 @@ class Folder
     {
         return 'Folder '.$this->getSource().'.'.$this->getName();
     }
+
+    public function getBreadcrumbArray(): array
+    {
+        $breadCrumb = [];
+        $selectedFolder = $this;
+        $breadCrumb[] = $selectedFolder;
+        while ($selectedFolder->getParent()) {
+            $breadCrumb[] = $selectedFolder->getParent();
+            $selectedFolder = $selectedFolder->getParent();
+        }
+
+        return array_reverse($breadCrumb);
+    }
+
+    public function getFolderPath(): string
+    {
+        $breadcrumb = $this->getBreadcrumbArray();
+        $path = 'Root';
+
+        foreach ($breadcrumb as $folder) {
+            $path = $path . '/' . $folder->getName();
+        }
+
+        return $path;
+    }
 }

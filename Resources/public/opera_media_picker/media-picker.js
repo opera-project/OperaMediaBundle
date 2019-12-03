@@ -33,7 +33,13 @@ var ajaxMediaLink = function (FormVarsId, callback = null) {
             url: $(this).attr('href'),
             success: function (data) {
                 $(document).find('.modal-body').html($(data).find('#main').html());
-                addDataAjaxLinkToPagination();
+                
+                // addDataAjaxLinkToPagination
+                $('.pagination a').each(function(e) {
+                    $(this).attr('data-ajax-link', '');
+                })
+
+
                 if (callback) {
                     callback();
                 }
@@ -72,10 +78,4 @@ var preventDefaultSubmit = function (FormVarsId, callback = null) {
 
         $.ajax(options);
     });
-}
-
-var addDataAjaxLinkToPagination = function () {
-     $('.pagination a').each(function(e) {
-        $(this).attr('data-ajax-link', '');
-    })
 }

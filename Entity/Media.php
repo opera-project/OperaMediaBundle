@@ -153,4 +153,18 @@ class Media
         return 'Media '.$this->getSource().'.'.$this->getName();
     }
 
+    public function getFolderPath(): string
+    {
+        if (!$this->getFolder()) {
+            return '/';
+        }
+
+        return $this->getFolder()->getFolderPath();
+    }
+
+    public function getMediaPath(): string
+    {
+        return $this->getFolderPath() == '/' ? $this->getFolderPath().$this->getName():$this->getFolderPath().'/'.$this->getName();
+    }
+
 }
