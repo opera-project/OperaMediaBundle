@@ -79,7 +79,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/view-modal", name="opera_admin_choose_media")
-     * @Template
+     * @Template("@OperaMedia/admin/_mediateque.html.twig")
      */
     public function viewModal(
     ?string $source_name = null,

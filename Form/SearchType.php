@@ -40,9 +40,6 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            // todo
-            'csrf_protection' => false,
-            'allow_extra_fields' => true,
             'data_class' => Search::class,
         ]);
     }

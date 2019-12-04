@@ -19,7 +19,7 @@ class Search
 
     const SEARCH_WHERE_SOURCE = "In current Source";
     const SEARCH_WHERE_FOLDER = "In current Folder";
-    const SEARCH_WHERE_FOLDERS = "In current Folder and sub folders";
+    const SEARCH_WHERE_FOLDERS = "In current Folder and sub folder";
 
     // string query
     private $search = null;
