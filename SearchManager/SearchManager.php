@@ -19,12 +19,12 @@ class SearchManager
 
     public function search(Search $search, Source $source, ?Folder $currentFolder = null)
     {
-        $folders = null;
+        $folders = [];
         if ($search->getWhat() == Search::SEARCH_WHAT_ONLY_FOLDER || $search->getWhat() == Search::SEARCH_WHAT_ALL) {
             $folders = $this->folderRepository->search($search, $source, $currentFolder);
         }
 
-        $medias = null;
+        $medias = [];
         if ($search->getWhat() == Search::SEARCH_WHAT_ONLY_MEDIA || $search->getWhat() == Search::SEARCH_WHAT_ALL) {
             $medias = $this->mediaRepository->search($search, $source, $currentFolder);
         }

@@ -65,14 +65,14 @@ class FolderRepository extends ServiceEntityRepository
              ->setParameter('sourceName', $source->getName());
 
         if ($search->getWhere() == Search::SEARCH_WHERE_FOLDER && $currentFolder) {
-            $qb->andWhere('f.parent_id = :currentFolderId')
+            $qb->andWhere('f.parent = :currentFolderId')
                 ->setParameter('currentFolderId', $currentFolder->getId());
         }
 
         if ($search->getWhere() == Search::SEARCH_WHERE_FOLDERS && $currentFolder) {
             $qb
                 ->leftJoin('f.parent', 'p')
-                ->andWhere('p.parent_id = :currentFolderId')
+                ->andWhere('p.parent = :currentFolderId')
                 ->setParameter('currentFolderId', $currentFolder->getId());
         }
 

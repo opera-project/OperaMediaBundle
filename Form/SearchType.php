@@ -30,7 +30,11 @@ class SearchType extends AbstractType
                     Search::SEARCH_WHERE_FOLDERS => Search::SEARCH_WHERE_FOLDERS,
                 ],
             ])
-            ->add('search', TextType::class);
+            ->add('search', TextType::class, [
+                "attr" => [
+                    "minlength" => 3
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -1,0 +1,28 @@
+{% if item.mime starts with 'image/' %}
+    <div class="file-preview" data-type="{{ item.mime }}">
+        <img src="{{ item.path | imagine_filter('opera_thumbnail') }}"/>
+    </div>
+    <strong>{{ item.name }}</strong>
+    <i class="fa fa-image"></i>
+{% else %}
+    <strong>{{ item.name }}</strong>
+    {% if item.mime starts with 'image/' %}
+
+    {% elseif item.mime starts with 'audio/' %}
+        <i class="fa fa-file-audio-o"></i>
+    {% elseif item.mime starts with 'video/' %}
+        <i class="fa fa-file-video-o"></i>
+    {% elseif item.mime == "application/pdf" %}
+        <i class="fa fa-file-pdf-o"></i>
+    {% elseif item.mime == "text/plain" %}
+        <i class="fa fa-file-text"></i>
+    {% elseif item.mime == "application/zip" %}
+        <i class="fa fa-file-archive-o "></i>
+    {% else %}
+        {{ item.mime }}
+    {% endif %}
+{% endif %}
+
+{% if item.type == 'media' and not item.mime starts with 'image/' %}
+    <div class="file-preview"></div>
+{% endif %}

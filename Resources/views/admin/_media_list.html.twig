@@ -70,7 +70,6 @@
                 <div class="row">
                     <div
                         class="col-12">
-                        {# {{selected_folder.path}} #}
                         {% if breadcrumb is defined and breadcrumb|length %}
                             <ol class="breadcrumb">
                                 <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: null }) }}">
@@ -124,105 +123,6 @@
             </fieldset>
         </div>
 
-        {% if searchForm %}
-            <div class="field-group col-12">
-                <fieldset>
-                    <legend class="with-icon">
-                        <i class="fa fa-fw fa-search"></i>
-                        Recherche
-                    </legend>
-                    {{ form_start(searchForm, { attr: { class: 'form-horizontal', action: path('opera_admin_media_list', { source_name: selected_source.name, folder: selected_folder ? selected_folder.id.tostring : null }) }}) }}
-                    <div class="row">
-                        <div class="col-3">{{ form_row(searchForm.what) }}</div>
-                        <div class="col-3">{{ form_row(searchForm.where) }}</div>
-                        <div class="col-3">{{ form_row(searchForm.search) }}</div>
-                        <div class="col-3 col-search">
-                            <button class="btn btn-primary action-search" type="submit">
-                                <i class="fa fa-search"></i>
-                                {% trans from 'OperaMedia' %}Search{% endtrans %}
-                            </button>
-                        </div>
-                    </div>
-                    {{ form_end(searchForm) }}
-                    <table class="table datagrid">
-                        <thead>
-                            <tr>
-                                <th><a>Type</a></th>
-                                <th><a>Path</a></th>
-                                <th><a>Name</a></th>
-                                <th><a>created At</a></th>
-                                <th><a>updated At</a></th>
-                                <th><a>Actions</a></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in searchResult %}
-                                <tr>
-                                    <td>{{ item.type }}</td>
-                                    <td>{{ item.folderPath }}</td>
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ item.createdAt|date("Y/m/d H:i:s") }}</td>
-                                    <td>{{ item.updatedAt|date("Y/m/d H:i:s") }}</td>
-
-                                    <td class="actions">
-                                        {% if item.type == 'folder' %}
-                                            <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: item.id }) }}">
-                                                Go to folder
-                                                <strong>{{ item.name }}</strong>
-                                            </a>
-
-
-                                            <a data-ajax-link class="btn btn-default" href="{% if item.type == 'folder' %} {{ path('opera_admin_media_folder_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }} {% else %} {{ path('opera_admin_media_media_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }} {% endif %}">
-                                                Edit
-                                            </a>
-                                        {% else %}
-
-
-                                            {% if mode != 'ajax' %}
-                                                <a data-ajax-link class="btn btn-default" href="{% if item.type == 'folder' %} {{ path('opera_admin_media_folder_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }} {% else %} {{ path('opera_admin_media_media_form', { id: item.id.toString, parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }} {% endif %}">
-                                                    Edit
-                                                </a>
-                                            {% else %}
-                                                <a class="btn btn-success select-media-button" data-select-media="{{ item.id }}" data-select-media-preview="{{ item.path | imagine_filter('opera_thumbnail') }}">
-                                                    Select
-                                                </a>
-                                                {% if with_formats is not defined or with_formats %}
-                                                    <div class="dropdown pull-left select-media-drop-down">
-                                                        <button aria-expanded="false" aria-haspopup="true" class="btn btn-success dropdown-toggle" data-toggle="dropdown" id="dropdownMenuButton{{ item.id }}" type="button">
-                                                            Select
-                                                            <span class="caret"></span>
-                                                        </button>
-                                                        <ul aria-labelledby="dropdownMenuButton{{ item.id }}" class="dropdown-menu">
-                                                            {% if filter_sets is defined %}
-                                                                {% for filter_set in filter_sets|keys %}
-                                                                    <li>
-                                                                        <a class="dropdown-item" data-select-media="{{ item.id }}" data-select-media-preview="{{ path('liip_imagine_filter', { path: item.path, filter: filter_set }) }}">{{ filter_set }}</a>
-                                                                    </li>
-                                                                {% endfor %}
-                                                            {% endif %}
-                                                        </ul>
-                                                    </div>
-                                                {% endif %}
-                                            {% endif %}
-
-
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            {% if not searchResult %}
-                                <tr>
-                                    <td class="no-results" colspan="7">
-                                        No results
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </fieldset>
-            </div>
-        {% endif %}
-
         <div class="field-group col-12">
             <fieldset>
                 <legend class="with-icon">
@@ -260,6 +160,11 @@
             </fieldset>
         </div>
 
+        {% if searchForm %}
+            {% include "@OperaMedia/admin/_media_search.html.twig" %}
+
+        {% endif %}
+
     </div>
 </div>
 
@@ -268,14 +173,15 @@
 <script>
     {% if mode == 'ajax' %}
 
-        /**
+    /**
     * set pagination link ajax
     */
         $(document).ready(function () { // addDataAjaxLinkToPagination
             $('.pagination a').each(function (e) {
                 $(this).attr('data-ajax-link', '');
             })
-        });{% endif %}
+        });
+    {% endif %}
 
 </script>
 
