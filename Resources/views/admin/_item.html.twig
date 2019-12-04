@@ -67,7 +67,7 @@
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ item.id }}">
                             {% if filter_sets is defined %}
                                 {% for filter_set in filter_sets|keys %}
-                                    <li><a class="dropdown-item" data-select-media="{{item.id}}" data-select-media-preview="{{ path('liip_imagine_filter', { path: item.path, filter: filter_set }) }}">{{ filter_set }}</a></li>
+                                    <li><a class="dropdown-item" data-select-media="{{item.id}}" data-select-media-preview="{{ path('liip_imagine_filter', { path: item.path, filter: filter_set }) }}">{{ filter_set|trans({}, 'media_size') }}</a></li>
                                 {% endfor %}
                             {% endif %}
                         </ul>
