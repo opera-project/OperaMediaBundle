@@ -12,11 +12,11 @@ use Opera\MediaBundle\Entity\Folder;
 use Opera\MediaBundle\Entity\Media;
 use Opera\MediaBundle\Form\FolderType;
 use Opera\MediaBundle\Form\MediaType;
-use Opera\MediaBundle\Form\SearchType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Opera\MediaBundle\SearchManager\SearchManager;
+use Opera\MediaBundle\MediaManager\MediaManager;
 
 class AdminController extends Controller
 {
@@ -69,50 +69,26 @@ class AdminController extends Controller
      * @Template
      */
     public function view(
-        FolderRepository $folderRepository,
         ?string $source_name = null,
         ?Folder $folder = null,
-        SourceManager $sourceManager,
         Request $request,
-        SearchManager $searchManager
+        MediaManager $mediaManager
     ) {
-        $sources = $sourceManager->getSources();
-        $selectedSource = $source_name ? $sourceManager->getSource($source_name) : array_values($sources)[0];
-        if (!$folder && $request->query->get('folder')) {
-            $folder = $folderRepository->findOneBy(["id" => $request->query->get('folder')]);
-        }
-        $pagerFantaMedia = $selectedSource->listMedias($folder, $request->get('page', 1));
-        $folders = ($request->get('page') == 1 || !$request->get('page')) ? $selectedSource->listFolders($folder) : [];
-
-        if ($folder) {
-            $breadCrumb = $folder->getBreadcrumbArray();
-        }
-
-        /**
-         * SEARCH
-         */
-        $searchResult = null;
-        $searchForm = $this->formFactory->create(SearchType::class);
-        $searchForm->handleRequest($request);
-        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
-            $search = $searchForm->getData();
-            $searchResult = $searchManager->search($search, $selectedSource, $folder);
-        }
-
-        return [
-            'sources' => $sources,
-            'mode' => $request->isXmlHttpRequest() ? 'ajax' : ($request->get('mode') ? $request->get('mode') : 'html'),
-            'selected_folder' => $folder,
-            'selected_source' => $selectedSource,
-            'pagerFantaMedia' => $pagerFantaMedia,
-            'folders' => $folders,
-            'filter_sets' => $this->container->getParameter('liip_imagine.filter_sets'),
-            'breadcrumb' => $breadCrumb,
-            'searchForm' => $searchForm->createView(),
-            'searchResult' => $searchResult
-        ];
+        return $mediaManager->getMediathequeVars($request, $source_name, $folder);
     }
 
+    /**
+     * @Route("/view-modal", name="opera_admin_choose_media")
+     * @Template
+     */
+    public function viewModal(
+    ?string $source_name = null,
+    ?Folder $folder = null,
+    Request $request,
+    MediaManager $mediaManager
+    ) {
+        return $mediaManager->getMediathequeVars($request, $source_name, $folder);
+    }
 
     /**
      * @Route("/media/folder/{id}/delete", name="opera_admin_media_delete_folder")

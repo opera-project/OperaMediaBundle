@@ -11,21 +11,7 @@
         
         <input type="hidden" id="{{form.vars.id}}" name="{{form.vars.full_name}}" value="{{ value }}"/>
 
-        <!-- Modal -->
-        <div class="modal fade media_entity_modal" id="mediaPickerModal{{form.vars.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel{{form.vars.id}}">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="myModalLabel{{form.vars.id}}">{% trans from 'OperaMedia' %}Choose Media{% endtrans %}</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-
-                    <div class="modal-body">
-                        {% include "@OperaMedia/admin/_media_list.html.twig" with { 'mode': 'ajax', 'with_formats': false } %}
-                    </div>
-                </div>
-            </div>
-        </div>
+        {# cannot put modal directly here, modal is add at the end of the <body> tag with getMediapickerModalContent() #}
     </div>
 
     <script src="{{ asset('bundles/operamedia/opera_media_picker/media-picker.js') }}"></script>
@@ -33,6 +19,7 @@
     <script>
 
         $(document).ready(function() {
+            getMediapickerModalContent('{{form.vars.id}}', '{% trans from "OperaMedia" %}Choose Media{% endtrans %}');
             selectMedia('{{form.vars.id}}');
             ajaxMediaLink('{{form.vars.id}}', () => {
                 $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
@@ -40,17 +27,6 @@
             preventDefaultSubmit('{{form.vars.id}}', () => {
                 $('#mediaPickerModal{{form.vars.id}} .select-media-drop-down').remove();
             });
-
-            // todo gerer la modale quand je suis sur la page d'un formulaire qui utilise mon media picker
-            // let modalHtml = $('#mediaPickerModal{{form.vars.id}}').parent().html();
-            // // $modalHtml = $(document).find('#mediaPickerModal{{form.vars.id}}')[0];
-            // // console.log($(document).find('#mediaPickerModal{{form.vars.id}}')[0]);
-            // console.log(modalHtml);
-            // // $()
-            // console.log($('body'));
-            // console.log('youpi');
-            // //$('body').append('<div class="test">'+modalHtml+'</div>')
-            // // $('body').append('<div class="test">coucou</div>')
         });
 
     </script>

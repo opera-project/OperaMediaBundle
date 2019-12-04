@@ -79,3 +79,32 @@ var preventDefaultSubmit = function (FormVarsId, callback = null) {
         $.ajax(options);
     });
 }
+
+var getMediapickerModalContent = function (mediaPickerModalId, title) {
+    let urlParams = new URLSearchParams(document.querySelector('script[src*=opera_media_picker]').attributes.src.value.split('?')[1]);
+    let baseUrl = urlParams.get('base_url') || '/admin';
+
+    $.ajax({
+        url: baseUrl + "/view-modal",
+        success: function (data) {
+            html = '';
+            /**
+             * add modal of the mediateque at the end of the body
+             */
+            html += '<div class="modal fade media_entity_modal" id="mediaPickerModal'+mediaPickerModalId+'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel'+mediaPickerModalId+'">';
+            html +=     '<div class="modal-dialog modal-lg" role="document">';
+            html +=         '<div class="modal-content">';
+            html +=             '<div class="modal-header">';
+            html +=                 '<h4 class="modal-title" id="myModalLabel'+mediaPickerModalId+'">'+title+'</h4>';
+            html +=                 '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+            html +=             '</div>';
+            html +=             '<div class="modal-body">';
+            html +=                 data;
+            html +=             '</div>';
+            html +=         '</div>';
+            html +=     '</div>';
+            html += '</div>';
+            $('body').append(html)
+        }
+    });
+}
