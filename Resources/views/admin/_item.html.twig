@@ -1,11 +1,13 @@
 <div class="panel {% if item.type == 'folder' %}panel-info{% else %}panel-default{% endif %}">
-    <div class="panel-heading">
-        {% if item.type == 'folder' %}
+    {% if item.type == 'folder' %}
+        <div class="panel-heading droppable" ondrop="drop_handler(event)" ondragover="dragover_handler(event)" data-folder-id="{{item.id}}" data-folder-name="{{item.name}}">
             {% include "@OperaMedia/admin/_item_folder.html.twig" %}
-        {% else %}
+        </div>
+    {% else %}
+        <div class="panel-heading draggable blue-border" draggable="true" ondragend="drag_end(event)" ondragstart="dragstart_handler(event)" data-media-id="{{item.id}}" data-media-name="{{item.name}}">
             {% include "@OperaMedia/admin/_item_media.html.twig" %}
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 
     <div class="panel-body">
 
@@ -64,5 +66,22 @@
     .badge {
         background-color: #337ab7;
         color: white;
+    }
+    .draggable {
+        border-style: dashed;
+    }
+    .blue-border {
+        border-style: dashed;
+        border-color: #337ab7;
+    }
+
+    .green-border {
+        border-style: dashed;
+        border-color: green;
+    }
+
+    .yellow-border {
+        border-style: dashed;
+        border-color: yellow;
     }
 </style>

@@ -82,7 +82,7 @@
                                             {{ breadcrumb_folder.name }}
                                         </li>
                                     {% else %}
-                                        <li>
+                                        <li class="droppable" ondrop="drop_handler(event)" ondragover="dragover_handler(event)" data-folder-id="{{breadcrumb_folder.id}}" data-folder-name="{{breadcrumb_folder.name}}">
                                             <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: breadcrumb_folder.id }) }}">
                                                 {{ breadcrumb_folder.name }}
                                             </a>
@@ -133,6 +133,9 @@
 
                 <div class="row">
                     <div class="col-12">
+                        {% if folders is defined and pagerFantaMedia is defined and folders|length == 0 and not pagerFantaMedia.haveToPaginate %}
+                            No content
+                        {% endif %}
                         {% if folders is defined %}
                             {% for folder in folders %}
                                 {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': folder } %}
@@ -164,7 +167,6 @@
             {% include "@OperaMedia/admin/_media_search.html.twig" %}
 
         {% endif %}
-
     </div>
 </div>
 
@@ -180,6 +182,67 @@
             })
         });
     {% endif %}
+
+    /**
+     * DRAG & DROP to move file in other folder
+     */
+     var dragItem = null;
+
+    function dragstart_handler(ev) {
+        console.log("dragstart_handler");
+        dragItem = ev.srcElement;
+        if (!dragItem.dataset.mediaId) {
+            dragItem = dragItem.closest(".draggable");
+        }
+
+        if (!dragItem) {
+            console.error("draggable item error");
+            return;
+        }
+
+        event.dataTransfer.effectAllowed = "move";
+        $('.droppable').addClass('green-border');
+        $('.draggable').removeClass('blue-border');
+        dragItem.classList.add('yellow-border');
+    }
+
+    function dragover_handler(ev) {
+        console.log("dragover_handler");
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        ev.dataTransfer.dropEffect = "move";
+    }
+
+    function drop_handler(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        let targetItem = ev.srcElement;
+        if (!targetItem.dataset.folderId) {
+            targetItem = targetItem.closest(".droppable");
+        }
+
+        if (!targetItem || !dragItem) {
+            console.error("droppable item error");
+            return;
+        }
+        
+        console.log('need to put file ' +dragItem.dataset.mediaId+'('+dragItem.dataset.mediaName+') to folder '+targetItem.dataset.folderId+'('+targetItem.dataset.folderName+')');
+
+        var answer = window.confirm("Move '"+dragItem.dataset.mediaName+"' file to '"+targetItem.dataset.folderName+"' folder ?");
+        console.log(answer);
+        if (answer) {
+            // todo call api to move file to destination folder
+        }
+    }
+
+    function drag_end(ev) {
+        $('.droppable').removeClass('green-border');
+        $('.draggable').removeClass('blue-border');
+        $('.draggable').removeClass('yellow-border');
+        $('.draggable').addClass('blue-border');
+    }
+    
 
 </script>
 
