@@ -262,7 +262,7 @@
         if (answer) {
             $.ajax({
                 // todo get BaseUrl prettier ?
-                url: "{{ app.request.getSchemeAndHttpHost() }}/admin/media/move/folder/"+dragItem.dataset.folderId+"/"+targetItem.dataset.folderId+"?current_source={{selected_source?selected_source.name : null}}&folder={{selected_folder ? selected_folder.id : null}}&mode={{mode}}&with_formats={{ with_formats is defined and with_formats == true ? true: false}}",
+                url: "/admin/media/move/folder/"+dragItem.dataset.folderId+"/"+targetItem.dataset.folderId+"?current_source={{selected_source?selected_source.name : null}}&folder={{selected_folder ? selected_folder.id : null}}&mode={{mode}}&with_formats={{ with_formats is defined and with_formats == true ? true: false}}",
                 success: function (data) {
                     $(document).find(".mediateque").html(data);
                 }
@@ -275,7 +275,7 @@
         if (answer) {
             $.ajax({
                 // todo get BaseUrl prettier ?
-                url: "{{ app.request.getSchemeAndHttpHost() }}/admin/media/move/media/"+dragItem.dataset.mediaId+"/"+targetItem.dataset.folderId+"?current_source={{selected_source?selected_source.name : null}}&folder={{selected_folder ? selected_folder.id : null}}&mode={{mode}}&with_formats={{ with_formats is defined and with_formats == true ? true: false}}",
+                url: "/admin/media/move/media/"+dragItem.dataset.mediaId+"/"+targetItem.dataset.folderId+"?current_source={{selected_source?selected_source.name : null}}&folder={{selected_folder ? selected_folder.id : null}}&mode={{mode}}&with_formats={{ with_formats is defined and with_formats == true ? true: false}}",
                 success: function (data) {
                     $(document).find(".mediateque").html(data);
                 }
