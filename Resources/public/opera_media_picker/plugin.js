@@ -58,7 +58,7 @@ CKEDITOR.plugins.add( 'opera_media_picker', {
 
 		$.ajax({
 			/**
-			 * Ckedit always want the different image format
+			 * Ckedit always want the different image formats
 			 */
             url: baseUrl + "/media?with_formats=1",
             success: function (data) {

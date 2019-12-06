@@ -17,20 +17,6 @@
                     Edit
                 </a>
             {% endif %}
-
-{# mode: {{ mode }}
-with_formats is defines: {{ with_formats is defined }}
-with_formats: {{ with_formats is defined and with_formats == 1 }}
-{% if with_formats is defined %}
-    OK: '{{with_formats == false}}'
-{% endif %}
-type: {{ item.type }} #}
-{# {{ dump(_context) }} #}
-{# {{ dump(app.request) }}
-{{ app.request.getSchemeAndHttpHost() }} #}
-
-
-
             {% if mode == 'ajax' and item.type == 'media' %}
                 {% if with_formats == true %}
                     {# Note: dropdown button don't work if bootstrap.js is included twice (check easy_admin.yaml added assets js and webpack config) #}

@@ -30,11 +30,12 @@ class AdminController extends Controller
 
     /**
      * @Route("/media/move/folder/{folder_src}/{folder_dest}", name="opera_admin_media_move_folder")
+     * @Entity("folder_dest", expr="folder_dest ? repository.findOneById(folder_dest) : null")
      * @Template("@OperaMedia/admin/_mediateque.html.twig")
      */
     public function moveFolder(
         Folder $folder_src,
-        Folder $folder_dest,
+        ?Folder $folder_dest = null,
         Request $request,
         MediaManager $mediaManager,
         FolderRepository $folderRepository
@@ -48,18 +49,21 @@ class AdminController extends Controller
         return $mediaManager->getMediathequeVars($request, null, null);
     }
 
-        /**
+    /**
      * @Route("/media/move/media/{media}/{folder_dest}", name="opera_admin_media_move_media")
+     * @Entity("folder_dest", expr="folder_dest ? repository.findOneById(folder_dest) : null")
      * @Template("@OperaMedia/admin/_mediateque.html.twig")
      */
     public function moveMedia(
         Media $media,
-        Folder $folder_dest,
+        ?Folder $folder_dest = null,
         Request $request,
         MediaManager $mediaManager
     ) {
         $media->setFolder($folder_dest);
-        $media->setSource($folder_dest->getSource());
+        if ($folder_dest) {
+            $media->setSource($folder_dest->getSource());
+        }
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($media);
         $entityManager->flush();
