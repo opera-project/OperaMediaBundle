@@ -1,7 +1,7 @@
 <div class="file-preview">
 </div>
 <i class="fa fa-folder"></i>
-<a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: item.id }) }}">
+<a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: item.id, with_formats: with_formats }) }}">
     <strong>{{ item.name }}</strong>
     <span class="badge">{{ item.childs|length + item.medias|length }}</span>
 </a>

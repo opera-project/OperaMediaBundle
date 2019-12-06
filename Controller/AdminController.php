@@ -27,6 +27,46 @@ class AdminController extends Controller
         $this->formFactory = $formFactory;
     }
 
+
+    /**
+     * @Route("/media/move/folder/{folder_src}/{folder_dest}", name="opera_admin_media_move_folder")
+     * @Template("@OperaMedia/admin/_mediateque.html.twig")
+     */
+    public function moveFolder(
+        Folder $folder_src,
+        Folder $folder_dest,
+        Request $request,
+        MediaManager $mediaManager,
+        FolderRepository $folderRepository
+    ) {
+        $folder_src->setParent($folder_dest);
+        
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($folder_src);
+        $entityManager->flush();
+
+        return $mediaManager->getMediathequeVars($request, null, null);
+    }
+
+        /**
+     * @Route("/media/move/media/{media}/{folder_dest}", name="opera_admin_media_move_media")
+     * @Template("@OperaMedia/admin/_mediateque.html.twig")
+     */
+    public function moveMedia(
+        Media $media,
+        Folder $folder_dest,
+        Request $request,
+        MediaManager $mediaManager
+    ) {
+        $media->setFolder($folder_dest);
+        $media->setSource($folder_dest->getSource());
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($media);
+        $entityManager->flush();
+
+        return $mediaManager->getMediathequeVars($request, $request->get('current_source'), null);
+    }
+
     /**
      * @Route("/media/folder/form/{id}", defaults={ "id": null }, name="opera_admin_media_folder_form")
      * @Template
@@ -82,12 +122,13 @@ class AdminController extends Controller
      * @Template("@OperaMedia/admin/_mediateque.html.twig")
      */
     public function viewModal(
-    ?string $source_name = null,
-    ?Folder $folder = null,
     Request $request,
     MediaManager $mediaManager
     ) {
-        return $mediaManager->getMediathequeVars($request, $source_name, $folder);
+        $twigVars = $mediaManager->getMediathequeVars($request, null, null);
+        $twigVars["with_formats"] = false;
+
+        return $twigVars;
     }
 
     /**
