@@ -49,7 +49,7 @@ CKEDITOR.plugins.add( 'opera_media_picker', {
 		html +=     	'<div class="modal-dialog modal-lg" role="document">'
 		html +=     		'<div class="modal-content modal-lg">'
 		html +=     			'<div class="modal-header">'
-		html +=     				'<h4 class="modal-title" id="mediaPickerModal">Choose Media</h4>'
+		html +=     				'<h4 class="modal-title" id="mediaPickerModal">Choose Media (ckeditor)</h4>'
 		html +=     				'<button type="button" class="close" data-dismiss="modal" aria-label="Close">'
 		html +=     					'<span aria-hidden="true">&times;</span>'
 		html +=     				'</button>'
