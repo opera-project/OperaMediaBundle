@@ -5,21 +5,33 @@
         <div class="field-group col-7">
             <fieldset>
                 <legend class="with-icon">
-                    <i class="fa fa-fw fa-folder"></i> Informations
+                    <i class="fa fa-fw fa-folder"></i>
+                    Informations
                 </legend>
                 <div class="row">
                     <div class="col-12 ">
-                        {% trans from 'OperaMedia' %}Selected Source: {% endtrans %} <u>{% if selected_source %}{{ selected_source.name }}{% else %}none{% endif %}</u>
+                        {% trans from 'OperaMedia' %}Selected Source:
+                        {% endtrans %}
+                        <u>
+                            {% if selected_source %}
+                                {{ selected_source.name }}{% else %}none
+                            {% endif %}
+                        </u>
                         <br/>
-                        {% trans from 'OperaMedia' %}Current Folder: {% endtrans %} <u>{{ selected_folder ? selected_folder.name : 'root' }}</u>
+                        {% trans from 'OperaMedia' %}Current Folder:
+                        {% endtrans %}
+                        <u>{{ selected_folder ? selected_folder.name : 'root' }}</u>
                         <br/>
                         {% if selected_folder %}
-                            {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %}
+                            {% trans from 'OperaMedia' %}Parent Folder:
+                            {% endtrans %}
                             <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
                                 {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
                             </a>
                         {% else %}
-                            {% trans from 'OperaMedia' %}Parent Folder: {% endtrans %} none
+                            {% trans from 'OperaMedia' %}Parent Folder:
+                            {% endtrans %}
+                            none
                         {% endif %}
                     </div>
                 </div>
@@ -28,7 +40,8 @@
         <div class="field-group col-5">
             <fieldset>
                 <legend class="with-icon">
-                    <i class="fa fa-fw fa-plus"></i> {% trans from 'OperaMedia' %}Choose Source{% endtrans %}
+                    <i class="fa fa-fw fa-plus"></i>
+                    {% trans from 'OperaMedia' %}Choose Source{% endtrans %}
                 </legend>
 
                 <div class="row">
@@ -50,16 +63,19 @@
         <div class="field-group col-7">
             <fieldset>
                 <legend class="with-icon">
-                    <i class="fa fa-fw fa-location-arrow"></i> Localisation
+                    <i class="fa fa-fw fa-location-arrow"></i>
+                    Localisation
                 </legend>
 
                 <div class="row">
-                    <div class="col-12">
+                    <div
+                        class="col-12">
                         {% if breadcrumb is defined and breadcrumb|length %}
                             <ol class="breadcrumb">
                                 <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: null }) }}">
-                                Root
-                                </a> /
+                                    Root
+                                </a>
+                                /
                                 {% for breadcrumb_folder in breadcrumb %}
                                     {% if loop.last %}
                                         <li>
@@ -70,7 +86,8 @@
                                             <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: breadcrumb_folder.id }) }}">
                                                 {{ breadcrumb_folder.name }}
                                             </a>
-                                        </li> /
+                                        </li>
+                                        /
                                     {% endif %}
                                 {% endfor %}
                             </ol>
@@ -87,61 +104,69 @@
         <div class="field-group col-5">
             <fieldset>
                 <legend class="with-icon">
-                    <i class="fa fa-fw fa-plus"></i> Actions
+                    <i class="fa fa-fw fa-plus"></i>
+                    Actions
                 </legend>
 
                 <div class="row">
                     <div class="col-12">
                         <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_folder_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
-                            <i class="fa fa-plus"></i> {% trans from 'OperaMedia' %}New Folder{% endtrans %}
+                            <i class="fa fa-plus"></i>
+                            {% trans from 'OperaMedia' %}New Folder{% endtrans %}
                         </a>
                         <a data-ajax-link class="btn btn-primary action-new" href="{{ path('opera_admin_media_media_form', { parentFolder: selected_folder ? selected_folder.id.tostring : null, source: selected_source.name }) }}">
-                            <i class="fa fa-plus"></i> {% trans from 'OperaMedia' %}New Media{% endtrans %}
+                            <i class="fa fa-plus"></i>
+                            {% trans from 'OperaMedia' %}New Media{% endtrans %}
                         </a>
                     </div>
                 </div>
             </fieldset>
         </div>
-        
+
         <div class="field-group col-12">
             <fieldset>
                 <legend class="with-icon">
-                    <i class="fa fa-fw fa-folder"></i><i class="fa fa-fw fa-file"></i> Contenu
+                    <i class="fa fa-fw fa-folder"></i>
+                    <i class="fa fa-fw fa-file"></i>
+                    Contenu
                 </legend>
 
                 <div class="row">
                     <div class="col-12">
-                    {% if folders is defined %}
-                        {% for folder in folders %}
-                        {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': folder } %}
-                        {% endfor %}
-                    {% endif %}
+                        {% if folders is defined %}
+                            {% for folder in folders %}
+                                {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': folder } %}
+                            {% endfor %}
+                        {% endif %}
 
-                    {% if pagerFantaMedia is defined %}
-                        {% for media in pagerFantaMedia %}
-                            {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': media } %}
-                        {% endfor %}
+                        {% if pagerFantaMedia is defined %}
+                            {% for media in pagerFantaMedia %}
+                                {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': media } %}
+                            {% endfor %}
 
-                        {% if pagerFantaMedia and pagerFantaMedia.haveToPaginate %}
-                        {{ pagerfanta(pagerFantaMedia, 'twitter_bootstrap4', {
+                            {% if pagerFantaMedia and pagerFantaMedia.haveToPaginate %}
+                                {{ pagerfanta(pagerFantaMedia, 'twitter_bootstrap4', {
                                 routeName: 'opera_admin_media_list',
                                 routeParams: app.request.query.all() | merge({
                                     'source_name': selected_source ? selected_source.name : null,
                                     'folder': selected_folder ? selected_folder.id.__toString : null
                                 })
                         }) }}
+                            {% endif %}
+
                         {% endif %}
-                        
-                    {% endif %}
                     </div>
                 </div>
             </fieldset>
         </div>
 
+        {% if searchForm %}
+            {% include "@OperaMedia/admin/_media_search.html.twig" %}
+
+        {% endif %}
+
     </div>
 </div>
-
-<script src="{{ asset('bundles/operamedia/opera_media_picker/media-picker.js') }}"></script>
 
 <script>
     {% if mode == 'ajax' %}
@@ -149,22 +174,36 @@
     /**
     * set pagination link ajax
     */
-        $(document).ready(function() {
-            addDataAjaxLinkToPagination();
+        $(document).ready(function () { // addDataAjaxLinkToPagination
+            $('.pagination a').each(function (e) {
+                $(this).attr('data-ajax-link', '');
+            })
         });
     {% endif %}
+
 </script>
 
 <style>
-.list-group-item.active a {
-    color: #ffffff
-}
-.mediateque {
-    background: #f8fafc;
-    padding: 18px 20px;
-}
-.source-group-item {
-    padding-top: 0.3rem;
-    padding-bottom: 0.3rem;
-}
+    .list-group-item.active a {
+        color: #ffffff
+    }
+
+    .mediateque {
+        background: #f8fafc;
+        padding: 18px 20px;
+    }
+
+    .source-group-item {
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+    }
+
+    .col-search {
+        text-align: center;
+        line-height: 96px;
+    }
+
+    .col-search .action-search {
+        vertical-align: middle;
+    }
 </style>

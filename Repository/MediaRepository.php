@@ -6,6 +6,8 @@ use Opera\MediaBundle\Entity\Media;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Opera\MediaBundle\Entity\Folder;
+use Opera\MediaBundle\MediaManager\Source;
+use Opera\MediaBundle\SearchManager\Search;
 
 /**
  * @method Media|null find($id, $lockMode = null, $lockVersion = null)
@@ -45,6 +47,34 @@ class MediaRepository extends ServiceEntityRepository
         }
         
         return $qb->getQuery();
+    }
+
+    public function search(Search $search,  Source $source, ?Folder $currentFolder = null)
+    {
+        $qb = $this->createQueryBuilder('m');
+
+        $qb->andWhere('m.source = :sourceName')
+             ->setParameter('sourceName', $source->getName());
+
+        if ($search->getWhere() == Search::SEARCH_WHERE_FOLDER && $currentFolder) {
+            $qb->andWhere('m.folder = :currentFolderId')
+                ->setParameter('currentFolderId', $currentFolder->getId());
+        }
+
+        if ($search->getWhere() == Search::SEARCH_WHERE_FOLDERS && $currentFolder) {
+            $qb
+                ->innerJoin('m.folder', 'f')
+                ->leftJoin('f.childs', 'c')
+                ->andWhere('c.parent_id = :currentFolderId')
+                ->setParameter('currentFolderId', $currentFolder->getId());
+        }
+
+        if ($search->getSearch()) {
+            $qb->andWhere('m.name LIKE :searchQuery OR m.slug LIKE :searchQuery')
+                 ->setParameter('searchQuery', '%'.$search->getSearch().'%');
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
 }
