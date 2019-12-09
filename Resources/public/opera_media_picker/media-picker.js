@@ -32,7 +32,7 @@ var ajaxMediaLink = function (FormVarsId, callback = null) {
         $.ajax({
             url: $(this).attr('href'),
             success: function (data) {
-                $(document).find('.modal-body').html($(data).find('#main').html());
+                $('#mediaPickerModal' + FormVarsId).find('.modal-body').html($(data).find('#main').html());
                 
                 // addDataAjaxLinkToPagination
                 $('.pagination a').each(function(e) {

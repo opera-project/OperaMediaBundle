@@ -1,0 +1,12 @@
+<div class="form-group select-media-drop-down">
+    <select class="form-control"
+            data-select-media="{{ item.id }}"
+            data-select-media-preview="{{ path('liip_imagine_filter', { path: item.path, filter: 'FILTER_SET_TO_REPLACE' }) }}">
+        <option value="" selected>Select Size</option>
+        {% for filter_set in filter_sets|keys %}
+            <option value="{{ filter_set }}">
+                {{ filter_set|trans({}, 'media_size') }}
+            </option>
+        {% endfor %}
+    </select>
+</div>

@@ -3,13 +3,20 @@
 CKEDITOR.plugins.add( 'opera_media_picker', {
 	icons: 'opera_media_picker',
     init: function(editor) {
-		$(document).on('click', '#mediaPickerModal' + editor.id + ' [data-select-media]', function (event) {
-			event.preventDefault();
-				
+		/**
+		 * On <select> of image filter change: add image inside the ckeditor with the selected liip filter
+		 */
+		$(document).on('change', '#mediaPickerModal' + editor.id + ' .select-media-drop-down select', function (event) {
+			imgUrlWithFilter = this.dataset.selectMediaPreview; // liip imagine filter url
+
+			var regex = new RegExp('FILTER_SET_TO_REPLACE', "g");
+            imgUrlWithFilter = imgUrlWithFilter.replace(regex, this.value);
+
 			var img = editor.document.createElement('img');
-			img.setAttribute("src", $(this).data('select-media-preview'));
+			img.setAttribute("src", imgUrlWithFilter);
 			editor.insertElement(img);
 
+			this.selectedIndex = 0;
 			$("#mediaPickerModal" + editor.id).modal('hide');
 		});
 
@@ -25,6 +32,10 @@ CKEDITOR.plugins.add( 'opera_media_picker', {
 				$("#mediaPickerModal" + editor.id).modal('show');
 			}
 		});
+
+		/**
+		 * Add the image icon in the ckeditor toolbar.
+		 */
 		editor.ui.addButton('mediaPickerButton', {
 			label: "Media Picker",
 			command: 'mediaPicker',
@@ -38,7 +49,7 @@ CKEDITOR.plugins.add( 'opera_media_picker', {
 		html +=     	'<div class="modal-dialog modal-lg" role="document">'
 		html +=     		'<div class="modal-content modal-lg">'
 		html +=     			'<div class="modal-header">'
-		html +=     				'<h4 class="modal-title" id="mediaPickerModal">Choose Media</h4>'
+		html +=     				'<h4 class="modal-title" id="mediaPickerModal">Choose Media (ckeditor)</h4>'
 		html +=     				'<button type="button" class="close" data-dismiss="modal" aria-label="Close">'
 		html +=     					'<span aria-hidden="true">&times;</span>'
 		html +=     				'</button>'
