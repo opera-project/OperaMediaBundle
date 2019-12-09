@@ -57,7 +57,10 @@ CKEDITOR.plugins.add( 'opera_media_picker', {
 		let baseUrl = urlParams.get('base_url') || '/admin';
 
 		$.ajax({
-            url: baseUrl + "/media",
+			/**
+			 * Ckedit always want the different image formats
+			 */
+            url: baseUrl + "/media?with_formats=1",
             success: function (data) {
 				$('#mediaPickerModal' + editor.id).find('.modal-body').html($(data).find('#main').html());
 				$('#mediaPickerModal' + editor.id + ' .select-media-button').remove();

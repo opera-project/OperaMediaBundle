@@ -1,11 +1,13 @@
 <div class="panel {% if item.type == 'folder' %}panel-info{% else %}panel-default{% endif %}">
-    <div class="panel-heading">
-        {% if item.type == 'folder' %}
+    {% if item.type == 'folder' %}
+        <div class="panel-heading droppable blue-border" draggable="true" ondragend="drag_end(event)" ondragstart="dragstart_handler_folder(event)" ondrop="drop_handler(event)" ondragover="dragover_handler(event)" data-folder-id="{{item.id}}" data-folder-name="{{item.name}}" data-type="folder">
             {% include "@OperaMedia/admin/_item_folder.html.twig" %}
-        {% else %}
+        </div>
+    {% else %}
+        <div class="panel-heading draggable blue-border" draggable="true" ondragend="drag_end(event)" ondragstart="dragstart_handler(event)" data-media-id="{{item.id}}" data-media-name="{{item.name}}" data-type="media">
             {% include "@OperaMedia/admin/_item_media.html.twig" %}
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 
     <div class="panel-body">
 
@@ -15,13 +17,8 @@
                     Edit
                 </a>
             {% endif %}
-
             {% if mode == 'ajax' and item.type == 'media' %}
-                <a class="btn btn-success select-media-button" data-select-media="{{ item.id }}" data-select-media-preview="{{ item.path | imagine_filter('opera_thumbnail') }}">
-                    Select
-                </a>
-                {% if with_formats is not defined or with_formats %}
-
+                {% if with_formats == true %}
                     {# Note: dropdown button don't work if bootstrap.js is included twice (check easy_admin.yaml added assets js and webpack config) #}
                     <div class="dropdown pull-left select-media-drop-down">
                         <button aria-expanded="false" aria-haspopup="true" class="btn btn-success dropdown-toggle" data-toggle="dropdown" id="dropdownMenuButton{{ item.id }}" type="button">
@@ -38,6 +35,10 @@
                             {% endif %}
                         </ul>
                     </div>
+                {% else %}
+                    <a class="btn btn-success select-media-button" data-select-media="{{ item.id }}" data-select-media-preview="{{ item.path | imagine_filter('opera_thumbnail') }}">
+                        Select
+                    </a>
                 {% endif %}
             {% endif %}
 
@@ -64,5 +65,27 @@
     .badge {
         background-color: #337ab7;
         color: white;
+    }
+
+    .draggable {
+        border-style: dashed;
+    }
+
+    /* available drag item */
+    .blue-border {
+        border-style: dashed;
+        border-color: #337ab7;
+    }
+
+    /* available drop zone */
+    .green-border {
+        border-style: dashed;
+        border-color: green;
+    }
+
+    /* current drag item */
+    .yellow-border {
+        border-style: dashed;
+        border-color: yellow;
     }
 </style>

@@ -44,7 +44,7 @@
                         </td>
                         <td class="actions">
                             {% if item.type == 'folder' %}
-                                <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: item.id }) }}">
+                                <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: item.id, with_formats: with_formats }) }}">
                                     Go to folder
                                     <strong>{{ item.name }}</strong>
                                 </a>

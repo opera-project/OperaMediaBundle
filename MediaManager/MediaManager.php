@@ -61,7 +61,8 @@ class MediaManager
 
         return [
             'sources' => $sources,
-            'mode' => $request->isXmlHttpRequest() ? 'ajax' : ($request->get('mode') ? $request->get('mode') : 'html'),
+            'mode' => ($request->get('mode') ? $request->get('mode') : ($request->isXmlHttpRequest() ? 'ajax' : 'html')),
+            'with_formats' => $request->get('with_formats') ? $request->get('with_formats') : false,
             'selected_folder' => $folder,
             'selected_source' => $selectedSource,
             'pagerFantaMedia' => $pagerFantaMedia,

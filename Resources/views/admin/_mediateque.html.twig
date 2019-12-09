@@ -25,7 +25,7 @@
                         {% if selected_folder %}
                             {% trans from 'OperaMedia' %}Parent Folder:
                             {% endtrans %}
-                            <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null }) }}">
+                            <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: selected_folder.parent ? selected_folder.parent.id : null, with_formats: with_formats }) }}">
                                 {{ (selected_folder and selected_folder.parent) ? selected_folder.parent.name : 'root' }}
                             </a>
                         {% else %}
@@ -49,7 +49,7 @@
                         <ul class="list-group">
                             {% for source in sources %}
                                 <li class="list-group-item source-group-item {% if source.name == selected_source.name %}active{% endif %}">
-                                    <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: source.name }) }}">
+                                    <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: source.name, with_formats: with_formats }) }}">
                                         <strong>{{ source.name }}</strong><br/>
                                     </a>
                                 </li>
@@ -72,7 +72,7 @@
                         class="col-12">
                         {% if breadcrumb is defined and breadcrumb|length %}
                             <ol class="breadcrumb">
-                                <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: null }) }}">
+                                <a class="droppable" ondrop="drop_handler(event)" ondragover="dragover_handler(event)"  data-folder-id="root" data-folder-name="Root" data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: null, with_formats: with_formats }) }}">
                                     Root
                                 </a>
                                 /
@@ -82,8 +82,8 @@
                                             {{ breadcrumb_folder.name }}
                                         </li>
                                     {% else %}
-                                        <li>
-                                            <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: breadcrumb_folder.id }) }}">
+                                        <li class="droppable" ondrop="drop_handler(event)" ondragover="dragover_handler(event)" data-folder-id="{{breadcrumb_folder.id}}" data-folder-name="{{breadcrumb_folder.name}}">
+                                            <a data-ajax-link href="{{ path('opera_admin_media_list', { source_name: selected_source.name, folder_id: breadcrumb_folder.id, with_formats: with_formats }) }}">
                                                 {{ breadcrumb_folder.name }}
                                             </a>
                                         </li>
@@ -142,6 +142,10 @@
                         {% if pagerFantaMedia is defined %}
                             {% for media in pagerFantaMedia %}
                                 {% include "@OperaMedia/admin/_item.html.twig" with {'mode': mode|default('new'), 'item': media } %}
+                            {% else %}
+                                {% if folders is defined and folders|length == 0 %}
+                                    No content
+                                {% endif %}
                             {% endfor %}
 
                             {% if pagerFantaMedia and pagerFantaMedia.haveToPaginate %}
@@ -164,7 +168,6 @@
             {% include "@OperaMedia/admin/_media_search.html.twig" %}
 
         {% endif %}
-
     </div>
 </div>
 
@@ -180,6 +183,114 @@
             })
         });
     {% endif %}
+
+    /**
+     * DRAG & DROP to move file or folder in other folder
+     */
+    var dragItem = null;
+
+    function dragstart_handler_folder(ev) {
+        console.log("dragstart_handler");
+        dragItem = ev.srcElement;
+        if (!dragItem.dataset.folderId) {
+            dragItem = dragItem.closest(".draggable");
+        }
+
+        if (!dragItem) {
+            console.error("draggable item error");
+            return;
+        }
+
+        event.dataTransfer.effectAllowed = "move";
+        $('.droppable').addClass('green-border');
+        $('.draggable').removeClass('blue-border');
+        dragItem.classList.add('yellow-border');
+    }
+
+    function dragstart_handler(ev) {
+        console.log("dragstart_handler");
+        dragItem = ev.srcElement;
+        if (!dragItem.dataset.mediaId) {
+            dragItem = dragItem.closest(".draggable");
+        }
+
+        if (!dragItem) {
+            console.error("draggable item error");
+            return;
+        }
+
+        event.dataTransfer.effectAllowed = "move";
+        $('.droppable').addClass('green-border');
+        $('.draggable').removeClass('blue-border');
+        dragItem.classList.add('yellow-border');
+    }
+
+    function dragover_handler(ev) {
+        console.log("dragover_handler");
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        ev.dataTransfer.dropEffect = "move";
+    }
+
+    function drop_handler(ev) {
+        console.log("drop_handler");
+        ev.preventDefault();
+        ev.stopPropagation();
+        let targetItem = ev.srcElement;
+        if (!targetItem.dataset.folderId) {
+            targetItem = targetItem.closest(".droppable");
+        }
+
+        if (!targetItem || !dragItem) {
+            console.error("droppable item error");
+            return;
+        }
+        
+        if (dragItem.dataset.type == 'folder') {
+            if (dragItem == targetItem) {
+                return;
+            }
+            moveFolder(dragItem, targetItem);
+        } else {
+            moveMedia(dragItem, targetItem);
+        }
+    }
+
+    function moveFolder(dragItem, targetItem) {
+        var answer = window.confirm("Move '"+dragItem.dataset.folderName+"' folder to '"+targetItem.dataset.folderName+"' folder ?");
+        if (answer) {
+            $.ajax({
+                // todo get BaseUrl prettier ?
+                url: "{{ app.request.getSchemeAndHttpHost() }}/admin/media/move/folder/"+dragItem.dataset.folderId+"/"+targetItem.dataset.folderId+"?current_source={{selected_source?selected_source.name : null}}&folder={{selected_folder ? selected_folder.id : null}}&mode={{mode}}&with_formats={{ with_formats is defined and with_formats == true ? true: false}}",
+                success: function (data) {
+                    $(document).find(".mediateque").html(data);
+                }
+            });
+        }
+    }
+
+    function moveMedia(dragItem, targetItem) {
+        var answer = window.confirm("Move '"+dragItem.dataset.mediaName+"' file to '"+targetItem.dataset.folderName+"' folder ?");
+        if (answer) {
+            $.ajax({
+                // todo get BaseUrl prettier ?
+                url: "{{ app.request.getSchemeAndHttpHost() }}/admin/media/move/media/"+dragItem.dataset.mediaId+"/"+targetItem.dataset.folderId+"?current_source={{selected_source?selected_source.name : null}}&folder={{selected_folder ? selected_folder.id : null}}&mode={{mode}}&with_formats={{ with_formats is defined and with_formats == true ? true: false}}",
+                success: function (data) {
+                    $(document).find(".mediateque").html(data);
+                }
+            });
+        }
+    }
+
+    function drag_end(ev) {
+        $('.droppable').removeClass('green-border');
+        $('.draggable').removeClass('blue-border');
+        $('.draggable').removeClass('yellow-border');
+        $('.droppable').removeClass('yellow-border');
+        $('.draggable').addClass('blue-border');
+    }
+    
 
 </script>
 
